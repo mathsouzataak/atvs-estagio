@@ -5,6 +5,12 @@
 // You can also execute the entire file by running the command:
 //     SFDX: Execute Anonymous Apex with Editor Contents
 
-string tempvar = 'Enter_your_name_here';
+String tempvar = 'Matheus';
 System.debug('Hello World!');
 System.debug('My name is ' + tempvar);
+
+// Instantiate using the Conta class defined in force-app/main/default/classes/Conta.cls
+Conta contazinha = new Conta(34, 'Pedro Paulo Pedroso');
+
+// Access the public property 'nome'
+System.debug('O nome da conta é ' + contazinha.nome);

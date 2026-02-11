@@ -9,4 +9,12 @@ public with sharing class Conta {
         this.nome = nome;
         saldo = 0;
     }
+
+    public void depositar(Decimal valor) {
+        if (valor > 0) {
+            saldo += valor;
+        } else {
+            throw new Exception('Não é possível depositar valores iguais ou menores que zero.');
+        }
+    }
 }
