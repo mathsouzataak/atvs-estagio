@@ -1,10 +1,10 @@
-public with sharing class Conta {
+public abstract with sharing class Conta {
 
-    public int numero;
+    public Integer numero;
     public String nome;
     public Decimal saldo;
 
-    public Conta(int numero, String nome) {
+    public Conta(Integer numero, String nome) {
         this.numero = numero;
         this.nome = nome;
         saldo = 0;
@@ -14,7 +14,11 @@ public with sharing class Conta {
         if (valor > 0) {
             saldo += valor;
         } else {
-            throw new Exception('Não é possível depositar valores iguais ou menores que zero.');
+            throw new IllegalArgumentException('Não é possível depositar valores iguais ou menores que zero.');
         }
+    }
+
+    public abstract Decimal calculartaxa(){
+        
     }
 }

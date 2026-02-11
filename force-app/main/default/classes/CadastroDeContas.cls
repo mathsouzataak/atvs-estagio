@@ -7,9 +7,10 @@ public with sharing class CadastroDeContas {
     }
 
     public static String listarContas() {
-        String lista;
+        String lista = new String();
+
         for (Conta conta : contas) {
-            lista += '[' + conta.numero + ']\t' + conta.nome + '\tSaldo: ' + conta.saldo.toString() + '\n'; 
+            lista = lista + '[' + conta.numero + ']\t' + conta.nome + '\tSaldo: ' + conta.saldo.toString() + '\n'; 
         }
 
         return lista;
