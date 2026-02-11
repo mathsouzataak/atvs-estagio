@@ -18,7 +18,14 @@ public abstract with sharing class Conta {
         }
     }
 
-    public abstract Decimal calculartaxa(){
-        
+    public abstract Decimal calculartaxa(){}
+
+    public static Decimal calcularTaxas(List<Conta> lista) {
+        Decimal totalTaxas = 0;
+        for (Conta conta : lista) {
+            totalTaxas += conta.saldo * conta.calculartaxa();
+        }
+
+        return totalTaxas;
     }
 }
