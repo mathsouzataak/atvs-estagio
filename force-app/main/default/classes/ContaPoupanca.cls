@@ -3,7 +3,7 @@ public with sharing class ContaPoupanca extends Conta{
         super(numero, nome);
     }
     
-    public Decimal calculartaxa() {
+    public override Decimal calculartaxa() {
         return saldo * 0.005;
     }
 }
