@@ -1,5 +1,7 @@
 public abstract with sharing class Conta {
 
+    public static Integer totalDeContas;
+
     public Integer numero;
     public String nome;
     public Decimal saldo;
@@ -8,6 +10,8 @@ public abstract with sharing class Conta {
         this.numero = numero;
         this.nome = nome;
         saldo = 0;
+
+        totalDeContas++;
     }
 
     public void depositar(Decimal valor) {
