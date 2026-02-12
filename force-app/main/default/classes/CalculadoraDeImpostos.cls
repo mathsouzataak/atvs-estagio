@@ -3,7 +3,11 @@ public with sharing class CalculadoraDeImpostos {
         
     }
 
-    public List<Tributavel> calcularImpostos(List<Tributavel> tributaveis) {
-
+    public Decimal calcularImpostos(List<Tributavel> tributaveis) {
+        Decimal total = 0;
+        for (Tributavel tributavel : tributaveis) {
+            total += tributavel.calcularImposto();
+        }
+        return total;
     }
 }
