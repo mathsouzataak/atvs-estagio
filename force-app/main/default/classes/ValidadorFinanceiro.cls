@@ -1,9 +1,7 @@
 public with sharing class ValidadorFinanceiro {
 
-    public static Boolean validarValor(Decimal valor) {
-        if (valor > 0) {
-            return true;
-        } else {
+    public static void validarValor(Decimal valor) {
+        if (valor <= 0) {
             throw new IllegalArgumentException('O valor deve ser maior que zero');
         }
     }

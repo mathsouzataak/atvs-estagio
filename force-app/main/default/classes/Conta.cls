@@ -14,13 +14,23 @@ public abstract with sharing class Conta {
         totalDeContas++;
     }
 
+    public abstract Decimal calculartaxa();
+
+
     public void depositar(Decimal valor) {
-        if (ValidadorFinanceiro.validarValor(valor)) {
-            saldo += valor;
+        ValidadorFinanceiro.validarValor(valor);
+        saldo += valor;
+
+    }
+
+    public void sacar(Decimal valor) {
+        if (valor > saldo) {
+            throw new SaldoInsuficienteException();
+        } else {
+            saldo -= valor;
         }
     }
 
-    public abstract Decimal calculartaxa();
 
     public static Decimal calcularTaxas(List<Conta> lista) {
         Decimal totalTaxas = 0;
