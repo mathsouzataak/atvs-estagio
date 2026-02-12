@@ -15,10 +15,8 @@ public abstract with sharing class Conta {
     }
 
     public void depositar(Decimal valor) {
-        if (valor > 0) {
+        if (ValidadorFinanceiro.validarValor(valor)) {
             saldo += valor;
-        } else {
-            throw new IllegalArgumentException('Não é possível depositar valores iguais ou menores que zero.');
         }
     }
 
