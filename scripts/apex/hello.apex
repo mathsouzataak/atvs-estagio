@@ -20,13 +20,6 @@ numsContas.add(contas[0].numero);
 numsContas.add(contas[1].numero);
 numsContas.add(contas[2].numero);
 
-numsContas.add(2);
-
-
-contas[0].depositar(4500);
-contas[1].depositar(100);
-contas[2].depositar(3000);
-
 Decimal totalTaxas = 0;
 
 for (Conta conta : contas) {
@@ -34,3 +27,25 @@ for (Conta conta : contas) {
 }
 
 System.debug('Total de taxas: ' + totalTaxas);
+
+
+
+
+Map<Integer, Conta> contasMap = new Map<Integer, Conta>();
+for (Conta conta : contas) {
+    contasMap.put(conta.numero, conta);
+}
+
+Conta conta = contasMap.get(2);
+
+System.debug('Conta selecionada (2): ' + conta.nome);
+
+
+contas[0].depositar(4500);
+contas[1].depositar(100);
+contas[2].depositar(3000);
+
+
+
+
+
