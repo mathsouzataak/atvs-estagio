@@ -20,6 +20,11 @@ numsContas.add(contas[0].numero);
 numsContas.add(contas[1].numero);
 numsContas.add(contas[2].numero);
 
+contas[0].depositar(4500);
+contas[1].depositar(100);
+contas[2].depositar(3000);
+
+
 Decimal totalTaxas = 0;
 
 for (Conta conta : contas) {
@@ -41,11 +46,11 @@ Conta conta = contasMap.get(2);
 System.debug('Conta selecionada (2): ' + conta.nome);
 
 
-contas[0].depositar(4500);
-contas[1].depositar(100);
-contas[2].depositar(3000);
 
+Set<Integer> numeros = new Set<Integer>{1, 3, 4};
 
+List<Conta> listaBusca = contas[0].buscarContas(numeros, contasMap);
 
-
-
+for (Conta conta : listaBusca) {
+    System.debug(conta.nome);
+}

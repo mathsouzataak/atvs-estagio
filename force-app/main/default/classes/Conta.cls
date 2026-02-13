@@ -53,4 +53,16 @@ public abstract with sharing class Conta {
             System.debug('Não foi possível sacar esse valor.');
         } 
     }
+
+
+    public List<Conta> buscarContas(Set<Integer> numeros, Map<Integer, Conta> mapa) {
+        List<Conta> contasSelecionadas = new List<Conta>();
+        for (Integer num : numeros) {
+            if (mapa.containsKey(num)) {
+                contasSelecionadas.add(mapa.get(num));
+            }
+        }
+
+        return contasSelecionadas;
+    }
 }
