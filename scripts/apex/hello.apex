@@ -11,10 +11,18 @@ System.debug('Hello World!');
 System.debug('My name is ' + tempvar);
 
 
-ContaCorrente conta = new ContaCorrente(25, 'Beltrano');
-conta.depositar(4000);
-conta.sacarTryCatch(50000);
-System.debug(conta.saldo);
+List<Conta> contas = new List<Conta>();
+contas.add(new ContaCorrente(1, 'Carlos'));
+contas.add(new ContaCorrente(2, 'João'));
+contas.add(new ContaPoupanca(3, 'Luiz'));
+contas[0].depositar(4500);
+contas[1].depositar(100);
+contas[2].depositar(3000);
 
-// SeguroDeVida seguro = new SeguroDeVida();
-// System.debug(seguro.calcularImposto());
+Decimal totalTaxas = 0;
+
+for (Conta conta : contas) {
+    totalTaxas += conta.calculartaxa();
+}
+
+System.debug('Total de taxas: ' + totalTaxas);
