@@ -10,11 +10,11 @@ String tempvar = 'Matheus';
 System.debug('Hello World!');
 System.debug('My name is ' + tempvar);
 
-//Conta conta = new Conta(34, 'Pedro Paulo Pedroso');
-//CadastroDeContas.adicionarConta(conta);
 
+ContaCorrente conta = new ContaCorrente(25, 'Beltrano');
+conta.depositar(4000);
+conta.sacarTryCatch(50000);
+System.debug(conta.saldo);
 
-
-String lista = CadastroDeContas.listarContas();
-
-System.debug(lista);
+// SeguroDeVida seguro = new SeguroDeVida();
+// System.debug(seguro.calcularImposto());

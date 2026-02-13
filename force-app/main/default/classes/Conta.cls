@@ -1,6 +1,6 @@
 public abstract with sharing class Conta {
 
-    public static Integer totalDeContas;
+    public static Integer totalDeContas = 0;
 
     public Integer numero;
     public String nome;
@@ -20,7 +20,6 @@ public abstract with sharing class Conta {
     public void depositar(Decimal valor) {
         ValidadorFinanceiro.validarValor(valor);
         saldo += valor;
-
     }
 
     public void sacar(Decimal valor) {
@@ -39,5 +38,19 @@ public abstract with sharing class Conta {
         }
 
         return totalTaxas;
+    }
+
+
+
+
+
+
+
+    public void sacarTryCatch(Decimal valor) {
+        try {
+            sacar(valor);
+        } catch (SaldoInsuficienteException e) {
+            System.debug('Não foi possível sacar esse valor.');
+        } 
     }
 }

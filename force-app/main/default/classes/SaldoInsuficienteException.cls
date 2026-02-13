@@ -1,3 +1,3 @@
-public with sharing class SaldoInsuficienteException implements Exception {
-    
+public with sharing class SaldoInsuficienteException extends Exception {
+
 }

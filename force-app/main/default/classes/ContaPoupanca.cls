@@ -1,4 +1,4 @@
-public with sharing class ContaPoupanca extends Conta{
+public with sharing class ContaPoupanca extends Conta {
     public ContaPoupanca(Integer numero, String nome) {
         super(numero, nome);
     }
