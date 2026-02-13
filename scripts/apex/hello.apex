@@ -12,9 +12,17 @@ System.debug('My name is ' + tempvar);
 
 
 List<Conta> contas = new List<Conta>();
+Set<Integer> numsContas = new Set<Integer>();
 contas.add(new ContaCorrente(1, 'Carlos'));
 contas.add(new ContaCorrente(2, 'João'));
 contas.add(new ContaPoupanca(3, 'Luiz'));
+numsContas.add(contas[0].numero);
+numsContas.add(contas[1].numero);
+numsContas.add(contas[2].numero);
+
+numsContas.add(2);
+
+
 contas[0].depositar(4500);
 contas[1].depositar(100);
 contas[2].depositar(3000);
