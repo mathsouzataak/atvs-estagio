@@ -1,3 +1,3 @@
-trigger OrderItemTrigger on SOBJECT (before insert) {
+trigger OrderItemTrigger on OrderItem (before insert) {
     new OrderItemTriggerHandler().run();
 }
