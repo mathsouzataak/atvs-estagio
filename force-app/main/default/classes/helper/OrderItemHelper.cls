@@ -16,7 +16,7 @@ public with sharing class OrderItemHelper {
 
         List<Imposto__c> impostos = [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
                                         FROM Imposto__c 
-                                        WHERE (Estado__c IN :mapPedidoEstado.values() AND Product__c IN :idsProdutos)];
+                                        WHERE (Status__c = 'Aprovado' AND Estado__c IN :mapPedidoEstado.values() AND Product__c IN :idsProdutos)];
 
         for (OrderItem item : itens) {
             Imposto__c impostoAplicado;
