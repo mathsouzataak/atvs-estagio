@@ -83,52 +83,57 @@ public with sharing class OrderItemHelper {
                                             (Product__c IN :idsProdutos OR HierarquiaProduto__c IN :idsHierarquias))];
         
         for (OrderItem item : itens) {
-            Frete__c freteAplicado;
-            // Busca por impostos que melhor correspondam ao produto e localidade do item
-            for (Frete__c frete : fretes) {
-                if (frete.Product__c == item.Product2Id) {
-                    if (frete.Cidade__c == mapPedidoCidade.get(item.OrderId).Id) {
-                        if (String.isBlank(freteAplicado?.Cidade__c) || frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    } else if (frete.Estado__c == mapPedidoCidade.get(item.OrderId).Estado__c) {
-                        if (String.isBlank(freteAplicado?.Cidade__c) && String.isBlank(freteAplicado?.Estado__c)
-                            || frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    } else if (frete.Pais__c == mapPedidoCidade.get(item.OrderId).Estado__r.Pais__c) {
-                        if (frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    }
-                } else if (frete.HierarquiaProduto__c == mapProduto.get(item.Product2Id).HierarquiaProduto__c) {
-                    if (String.isNotBlank(freteAplicado?.Product__c)) {
-                        continue;
-                    }
-
-                    if (frete.Cidade__c == mapPedidoCidade.get(item.OrderId).Id) {
-                        if (String.isBlank(freteAplicado?.Cidade__c) || frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    } else if (frete.Estado__c == mapPedidoCidade.get(item.OrderId).Estado__c) {
-                        if (String.isBlank(freteAplicado?.Cidade__c) && String.isBlank(freteAplicado?.Estado__c)
-                            || frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    } else if (frete.Pais__c == mapPedidoCidade.get(item.OrderId).Estado__r.Pais__c) {
-                        if (frete.CreatedDate > freteAplicado.CreatedDate) {
-                            freteAplicado = frete;
-                        }
-                    }
-                }
-            }
-            
+            Frete__c freteAplicado = getFreteAplicavel(fretes, mapProduto.get(item.Product2Id), mapPedidoCidade.get(item.OrderId));
+         
             if (freteAplicado != null) {
                 item.ValorFrete__c = freteAplicado.Valor__c;
             } else {
                 item.addError('O produto não possui frete aplicável para a localidade do pedido.');
             }
         }
+    }
+
+    private static Frete__c getFreteAplicavel(List<Frete__c> fretes, Product2 produto, Cidade__c cidade) {
+        Frete__c freteAplicavel;
+        for (Frete__c frete : fretes) {
+            if (frete.Product__c == produto.Id) {
+                if (frete.Cidade__c == cidade.Id) {
+                    if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                } else if (frete.Estado__c == cidade.Estado__c) {
+                    if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
+                        || frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
+                    if (frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                }
+            } else if (frete.HierarquiaProduto__c == produto.HierarquiaProduto__c) {
+                if (String.isNotBlank(freteAplicavel?.Product__c)) {
+                    continue;
+                }
+
+                if (frete.Cidade__c == cidade.Id) {
+                    if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                } else if (frete.Estado__c == cidade.Estado__c) {
+                    if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
+                        || frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
+                    if (frete.CreatedDate > freteAplicavel.CreatedDate) {
+                        freteAplicavel = frete;
+                    }
+                }
+            }
+        }
+
+        return freteAplicavel;
     }
     
 }
