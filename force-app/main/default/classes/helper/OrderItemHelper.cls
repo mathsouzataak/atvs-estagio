@@ -82,8 +82,19 @@ public with sharing class OrderItemHelper {
                                             (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
                                             (Product__c IN :idsProdutos OR HierarquiaProduto__c IN :idsHierarquias))];
         
+        Map<String, Frete__c> mapLocProdFrete = new Map<String, Frete__c>();
+        for (Frete__c frete : [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
+                                FROM Frete__c 
+                                WHERE (Status__c = 'Aprovado' AND 
+                                    (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                                    (Product__c IN :idsProdutos OR HierarquiaProduto__c IN :idsHierarquias))]) {
+            Id idLocalidade = FreteHelper.getLocalidadeId(frete);
+            Id idProduto = FreteHelper.getProdutoId(frete);
+            mapLocProdFrete.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto), frete);
+        }
+        
         for (OrderItem item : itens) {
-            Frete__c freteAplicado = getFreteAplicavel(fretes, mapProduto.get(item.Product2Id), mapPedidoCidade.get(item.OrderId));
+            Frete__c freteAplicado = getFreteAplicavel(mapLocProdFrete,fretes, mapProduto.get(item.Product2Id), mapPedidoCidade.get(item.OrderId));
          
             if (freteAplicado != null) {
                 item.ValorFrete__c = freteAplicado.Valor__c;
@@ -93,47 +104,75 @@ public with sharing class OrderItemHelper {
         }
     }
 
-    private static Frete__c getFreteAplicavel(List<Frete__c> fretes, Product2 produto, Cidade__c cidade) {
+    private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFretes, List<Frete__c> fretes, Product2 produto, Cidade__c cidade) {
         Frete__c freteAplicavel;
-        for (Frete__c frete : fretes) {
-            if (frete.Product__c == produto.Id) {
-                if (frete.Cidade__c == cidade.Id) {
-                    if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                } else if (frete.Estado__c == cidade.Estado__c) {
-                    if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
-                        || frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
-                    if (frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                }
-            } else if (frete.HierarquiaProduto__c == produto.HierarquiaProduto__c) {
-                if (String.isNotBlank(freteAplicavel?.Product__c)) {
-                    continue;
-                }
 
-                if (frete.Cidade__c == cidade.Id) {
-                    if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                } else if (frete.Estado__c == cidade.Estado__c) {
-                    if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
-                        || frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
-                    if (frete.CreatedDate > freteAplicavel.CreatedDate) {
-                        freteAplicavel = frete;
-                    }
-                }
-            }
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Id))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Id));
         }
 
-        return freteAplicavel;
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__c))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__c));
+        }
+
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__r.Pais__c))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__r.Pais__c));
+        }
+
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Id))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Id));
+        }
+
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__c))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__c));
+        }
+
+        if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__r.Pais__c))) {
+            return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__r.Pais__c));
+        }
+
+
+
+
+        // for (Frete__c frete : fretes) {
+        //     if (frete.Product__c == produto.Id) {
+        //         if (frete.Cidade__c == cidade.Id) {
+        //             if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         } else if (frete.Estado__c == cidade.Estado__c) {
+        //             if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
+        //                 || frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
+        //             if (frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         }
+        //     } else if (frete.HierarquiaProduto__c == produto.HierarquiaProduto__c) {
+        //         if (String.isNotBlank(freteAplicavel?.Product__c)) {
+        //             continue;
+        //         }
+
+        //         if (frete.Cidade__c == cidade.Id) {
+        //             if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         } else if (frete.Estado__c == cidade.Estado__c) {
+        //             if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
+        //                 || frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
+        //             if (frete.CreatedDate > freteAplicavel.CreatedDate) {
+        //                 freteAplicavel = frete;
+        //             }
+        //         }
+        //     }
+        // }
+
+        return null;
     }
     
 }

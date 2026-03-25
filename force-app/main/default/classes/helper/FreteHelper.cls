@@ -33,13 +33,13 @@ public with sharing class FreteHelper {
         }
     }
 
-    private static Id getLocalidadeId(Frete__c frete) {
+    public static Id getLocalidadeId(Frete__c frete) {
         return String.isNotBlank(frete.Cidade__c) ? frete.Cidade__c :
                                 String.isNotBlank(frete.Estado__c) ? frete.Estado__c : 
                                     frete.Pais__c;
     }
 
-    private static Id getProdutoId(Frete__c frete) {
+    public static Id getProdutoId(Frete__c frete) {
         return String.isNotBlank(frete.Product__c) ? frete.Product__c : frete.HierarquiaProduto__c;
     }
 
