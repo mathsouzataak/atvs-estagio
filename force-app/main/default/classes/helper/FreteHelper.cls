@@ -17,16 +17,16 @@ public with sharing class FreteHelper {
             }
         }
 
-        Set<String> locProdutoPair = new Set<String>();
+        Set<String> locProdutoPairOrg = new Set<String>();
         for (Frete__c freteOrg : [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c
                                         FROM Frete__c 
                                         WHERE ((Cidade__c IN :idsLocalidade OR Estado__c IN :idsLocalidade OR Pais__c IN :idsLocalidade) 
                                             AND (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsProduto))]) {
-            locProdutoPair.add(KeyStringGenerator.createStringFromKeys(getLocalidadeId(freteOrg), getProdutoId(freteOrg)));
+            locProdutoPairOrg.add(KeyStringGenerator.createStringFromKeys(getLocalidadeId(freteOrg), getProdutoId(freteOrg)));
         }
 
         for (Frete__c newFrete : newFretes) {
-            if (locProdutoPair.contains(KeyStringGenerator.createStringFromKeys(getLocalidadeId(newFrete), getProdutoId(newFrete)))) {
+            if (locProdutoPairOrg.contains(KeyStringGenerator.createStringFromKeys(getLocalidadeId(newFrete), getProdutoId(newFrete)))) {
                 newFrete.addError('Já existe um frete para esse produto/hierarquia nesse estado.');
                 continue;
             }
