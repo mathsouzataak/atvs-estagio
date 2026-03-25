@@ -1,7 +1,6 @@
 public with sharing class ImpostoHelper {
     
     public static void impedirDuplicidade(List<Imposto__c> newImpostos) {
-
         Set<Id> idsEstados = new Set<Id>();
         Set<Id> idsProdutos = new Set<Id>();
         Set<String> impostoPair = new Set<String>();
@@ -11,7 +10,7 @@ public with sharing class ImpostoHelper {
                 idsEstados.add(imposto.Estado__c);
                 idsProdutos.add(imposto.Product__c);
             } else {
-                imposto.addError('Este imposto é duplicado de outro nesta mesma inserção.');
+                imposto.addError('Este imposto é duplicata de outro nesta mesma inserção.');
             }
         }
 

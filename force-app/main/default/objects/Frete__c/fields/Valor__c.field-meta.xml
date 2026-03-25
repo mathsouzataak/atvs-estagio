@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valor__c</fullName>
+    <description>Valor do frete calculado pela localidade informada.</description>
+    <formula>IF(NOT(ISBLANK( Cidade__c )), 30, IF(NOT(ISBLANK( Estado__c )), 20, IF(NOT(ISBLANK( Pais__c )), 10, 0)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Valor</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Produto_XOR_Hierarquia</fullName>
+    <active>true</active>
+    <errorConditionFormula>NOT( 
+  OR( 
+    AND( 
+      ISBLANK( HierarquiaProduto__c ) , 
+      NOT( ISBLANK( Product__c ) ) 
+    ) ,
+    AND( 
+      ISBLANK( Product__c ) , 
+      NOT( ISBLANK( HierarquiaProduto__c ) ) 
+    )   
+  ) 
+)</errorConditionFormula>
+    <errorMessage>Deve-se selecionar um Produto ou uma Hierarquia, e apenas um dos dois.</errorMessage>
+</ValidationRule>

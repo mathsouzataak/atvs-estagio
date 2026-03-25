@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Conta_Obrigatoria</fullName>
+    <active>true</active>
+    <description>Deve ser dada uma conta.</description>
+    <errorConditionFormula>ISBLANK( AccountId )</errorConditionFormula>
+    <errorDisplayField>AccountId</errorDisplayField>
+    <errorMessage>Selecione uma conta.</errorMessage>
+</ValidationRule>
