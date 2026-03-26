@@ -19,6 +19,7 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
                 newProduto.add((OrderItem)Trigger.new[i]);
             }
         }
+        
         OrderItemHelper.atribuirParametros(newProduto);
     }
 
