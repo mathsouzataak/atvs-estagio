@@ -3,8 +3,10 @@ public with sharing class OrderItemHelper {
     public static void atribuirParametros(List<OrderItem> itens) {
         atribuirImposto(itens);
         atribuirFrete(itens);
-    }    
+    }
 
+
+    
     public static void atribuirImposto(List<OrderItem> itens) {
         
         // Sets com ids para query dos produtos e pedidos associados aos novos itens
@@ -16,34 +18,32 @@ public with sharing class OrderItemHelper {
         }
         
         // Map relacionando id dos pedidos com o id do estado do endereço de sua conta
-        Map<Id,Id> mapPedidoEstado = new Map<Id,Id>();
+        Map<Id,Order> mapPedido = new Map<Id,Order>();
+        Set<Id> idsEstado = new Set<Id>();
         for (Order pedido : [SELECT Id, AccountAddress__c FROM Order WHERE Id IN :idsPedidos]) {
-            mapPedidoEstado.put(pedido.Id, pedido.AccountAddress__r.Cidade__r.Estado__c);
+            mapPedido.put(pedido.Id, pedido);
+            idsEstado.add(pedido.AccountAddress__r.Cidade__r.Estado__c);
         }
         
-        // Listagem de impostos para os produtos e estados dos itens
-        List<Imposto__c> impostos = [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
-                                        FROM Imposto__c 
-                                        WHERE (Status__c = 'Aprovado' AND Estado__c IN :mapPedidoEstado.values() AND Product__c IN :idsProdutos)];
+        Map<String, Imposto__c> mapLocPropImposto = new Map<String,Imposto__c>();
+        for (Imposto__c imposto : queryImpostoFromEstadosProdutos(idsEstado, idsProdutos)) {
+            mapLocPropImposto.put(KeyStringGenerator.createStringFromKeys(imposto.Estado__c, imposto.Product__c), imposto);
+        }
         
         for (OrderItem item : itens) {
-            Imposto__c impostoAplicado;
-            // Busca por impostos que correspondam ao estado e produto do item
-            for (Imposto__c imposto : impostos) {
-                if (imposto.Product__c == item.Product2Id && imposto.Estado__c == mapPedidoEstado.get(item.OrderId)) {
-                    impostoAplicado = imposto;
-                    break;
-                }
-            }
+            Imposto__c impostoAplicado = mapLocPropImposto.get(KeyStringGenerator.createStringFromKeys(
+                mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
+                item.Product2Id
+            ));
             
             if (impostoAplicado != null) {
                 item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
-            } else { // Não foi encontrado imposto correspondente 
+            } else { // Não foi encontrado imposto correspondente
                 item.addError('O produto não possui imposto aplicável no estado do pedido.');
             }
         }
     }
-
+    
     public static void atribuirFrete(List<OrderItem> itens) {
         // Sets com ids para query dos produtos e pedidos associados aos novos itens
         Set<Id> idsProdutos = new Set<Id>();
@@ -54,17 +54,17 @@ public with sharing class OrderItemHelper {
         }
         
         // Map relacionando id dos pedidos com a cidade do endereço de sua conta
-        Map<Id,Cidade__c> mapPedidoCidade = new Map<Id,Cidade__c>();
+        Map<Id,Order> mapPedido = new Map<Id,Order>();
         Set<Id> idsCidade = new Set<Id>();
         Set<Id> idsEstado = new Set<Id>();
         Set<Id> idsPais = new Set<Id>();
         for (Order pedido : [SELECT Id, AccountAddress__c FROM Order WHERE Id IN :idsPedidos]) {
-            mapPedidoCidade.put(pedido.Id, pedido.AccountAddress__r.Cidade__r);
+            mapPedido.put(pedido.Id, pedido);
             idsCidade.add(pedido.AccountAddress__r.Cidade__c);
             idsEstado.add(pedido.AccountAddress__r.Cidade__r.Estado__c);
             idsPais.add(pedido.AccountAddress__r.Cidade__r.Estado__r.Pais__c);
         }
-
+        
         // Mapa de produtos relacionados aos itens
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
         Set<Id> idsHierarquias = new Set<Id>();
@@ -75,27 +75,16 @@ public with sharing class OrderItemHelper {
             idsHierarquias.add(produto.HierarquiaProduto__c);
         }
         
-        // Listagem de fretes correspondentes aosnparâmetros dos itens
-        List<Frete__c> fretes = [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
-                                        FROM Frete__c 
-                                        WHERE (Status__c = 'Aprovado' AND 
-                                            (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
-                                            (Product__c IN :idsProdutos OR HierarquiaProduto__c IN :idsHierarquias))];
-        
         Map<String, Frete__c> mapLocProdFrete = new Map<String, Frete__c>();
-        for (Frete__c frete : [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
-                                FROM Frete__c 
-                                WHERE (Status__c = 'Aprovado' AND 
-                                    (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
-                                    (Product__c IN :idsProdutos OR HierarquiaProduto__c IN :idsHierarquias))]) {
+        for (Frete__c frete : queryFreteFromLocalidadesProdutos(idsCidade, idsEstado, idsPais, idsProdutos, idsHierarquias)) {
             Id idLocalidade = FreteHelper.getLocalidadeId(frete);
             Id idProduto = FreteHelper.getProdutoId(frete);
             mapLocProdFrete.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto), frete);
         }
         
         for (OrderItem item : itens) {
-            Frete__c freteAplicado = getFreteAplicavel(mapLocProdFrete,fretes, mapProduto.get(item.Product2Id), mapPedidoCidade.get(item.OrderId));
-         
+            Frete__c freteAplicado = getFreteAplicavel(mapLocProdFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r);
+
             if (freteAplicado != null) {
                 item.ValorFrete__c = freteAplicado.Valor__c;
             } else {
@@ -104,74 +93,52 @@ public with sharing class OrderItemHelper {
         }
     }
 
-    private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFretes, List<Frete__c> fretes, Product2 produto, Cidade__c cidade) {
-        Frete__c freteAplicavel;
 
+
+
+
+    
+    private static List<Imposto__c> queryImpostoFromEstadosProdutos(Set<Id> idsEstado, Set<Id> idsProduto) {
+        return [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
+                    FROM Imposto__c 
+                    WHERE (Status__c = 'Aprovado' AND Estado__c IN :idsEstado AND Product__c IN :idsProduto)];
+    }
+
+    private static List<Frete__c> queryFreteFromLocalidadesProdutos(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia) {
+        return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
+                FROM Frete__c 
+                WHERE (Status__c = 'Aprovado' AND 
+                    (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                    (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia))];
+    }
+    
+    private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFretes, Product2 produto, Cidade__c cidade) {
+        Frete__c freteAplicavel;
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Id))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Id));
         }
-
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__c))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__c));
         }
-
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__r.Pais__c))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.Id, cidade.Estado__r.Pais__c));
         }
-
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Id))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Id));
         }
-
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__c))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__c));
         }
-
+        
         if (mapaFretes.containsKey(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__r.Pais__c))) {
             return mapaFretes.get(KeyStringGenerator.createStringFromKeys(produto.HierarquiaProduto__c, cidade.Estado__r.Pais__c));
         }
-
-
-
-
-        // for (Frete__c frete : fretes) {
-        //     if (frete.Product__c == produto.Id) {
-        //         if (frete.Cidade__c == cidade.Id) {
-        //             if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         } else if (frete.Estado__c == cidade.Estado__c) {
-        //             if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
-        //                 || frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
-        //             if (frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         }
-        //     } else if (frete.HierarquiaProduto__c == produto.HierarquiaProduto__c) {
-        //         if (String.isNotBlank(freteAplicavel?.Product__c)) {
-        //             continue;
-        //         }
-
-        //         if (frete.Cidade__c == cidade.Id) {
-        //             if (String.isBlank(freteAplicavel?.Cidade__c) || frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         } else if (frete.Estado__c == cidade.Estado__c) {
-        //             if (String.isBlank(freteAplicavel?.Cidade__c) && String.isBlank(freteAplicavel?.Estado__c)
-        //                 || frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         } else if (frete.Pais__c == cidade.Estado__r.Pais__c) {
-        //             if (frete.CreatedDate > freteAplicavel.CreatedDate) {
-        //                 freteAplicavel = frete;
-        //             }
-        //         }
-        //     }
-        // }
-
+        
         return null;
     }
     
