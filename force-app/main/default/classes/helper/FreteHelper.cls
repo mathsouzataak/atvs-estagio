@@ -18,10 +18,7 @@ public with sharing class FreteHelper {
         }
 
         Set<String> locProdutoPairOrg = new Set<String>();
-        for (Frete__c freteOrg : [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c
-                                        FROM Frete__c 
-                                        WHERE ((Cidade__c IN :idsLocalidade OR Estado__c IN :idsLocalidade OR Pais__c IN :idsLocalidade) 
-                                            AND (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsProduto))]) {
+        for (Frete__c freteOrg : queryFreteComLocProd(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringFromKeys(getLocalidadeId(freteOrg), getProdutoId(freteOrg)));
         }
 
@@ -41,6 +38,15 @@ public with sharing class FreteHelper {
 
     public static Id getProdutoId(Frete__c frete) {
         return String.isNotBlank(frete.Product__c) ? frete.Product__c : frete.HierarquiaProduto__c;
+    }
+
+
+    public static List<Frete__c> queryFreteComLocProd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia) {
+        return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
+                FROM Frete__c 
+                WHERE (Status__c = 'Aprovado' AND 
+                    (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                    (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia))];
     }
 
 }

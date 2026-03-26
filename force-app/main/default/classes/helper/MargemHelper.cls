@@ -21,11 +21,7 @@ public with sharing class MargemHelper {
         }
 
         Set<String> locProdutoPairOrg = new Set<String>();
-        for (Margem__c margemOrg : [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Account__c, AccountGroup__c 
-                                    FROM Margem__c 
-                                    WHERE ((Cidade__c IN :idsLocalidade OR Estado__c IN :idsLocalidade OR Pais__c IN :idsLocalidade) 
-                                        AND (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsProduto)
-                                        AND (Account__c IN :idsConta OR AccountGroup__c IN :idsConta))]) {
+        for (Margem__c margemOrg : queryMargemComLocProdAcc(idsLocalidade,idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsConta, idsConta)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringFromKeys(getLocalidadeId(margemOrg), getProdutoId(margemOrg), getContaId(margemOrg)));
         }
 
@@ -51,5 +47,13 @@ public with sharing class MargemHelper {
 
     public static Id getContaId(Margem__c margem) {
         return String.isNotBlank(margem.Account__c) ? margem.Account__c : margem.AccountGroup__c;
+    }
+
+    public static List<Margem__c> queryMargemComLocProdAcc(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsConta, Set<Id> idsGrupo) {
+        return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Account__c, AccountGroup__c 
+                FROM Margem__c 
+                WHERE ((Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                    (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia) AND 
+                    (Account__c IN :idsConta OR AccountGroup__c IN :idsGrupo))];
     }
 }
