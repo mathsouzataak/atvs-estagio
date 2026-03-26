@@ -7,10 +7,10 @@
   OR( 
     AND( 
       ISBLANK( Account__c ) , 
-      NOT( ISBLANK( Account_Group__c ) ) 
+      NOT( ISBLANK( AccountGroup__c ) ) 
     ) ,
     AND( 
-      ISBLANK( Account_Group__c ) , 
+      ISBLANK( AccountGroup__c ) , 
       NOT( ISBLANK( Account__c ) ) 
     )   
   ) 

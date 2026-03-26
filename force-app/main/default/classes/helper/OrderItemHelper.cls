@@ -31,8 +31,8 @@ public with sharing class OrderItemHelper {
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
-        Map<String, Imposto__c> mapLocPropXImposto = getMapLocProdXImposto(queryImpostoFromEstadosProdutos(idsEstado, idsProduto));
-        Map<String, Frete__c> mapLocProdXFrete = getMapLocProdXFrete(queryFreteFromLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
+        Map<String, Imposto__c> mapLocPropXImposto = getMapLocProdXImposto(queryImpostoComEstadosProd(idsEstado, idsProduto));
+        Map<String, Frete__c> mapLocProdXFrete = getMapLocProdXFrete(queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
 
         atribuirImposto(itens, mapLocPropXImposto, mapPedido);
         atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
@@ -86,20 +86,14 @@ public with sharing class OrderItemHelper {
 
         return mapLocPropXImposto;
     }
-
     
-
-
-
-
-    
-    private static List<Imposto__c> queryImpostoFromEstadosProdutos(Set<Id> idsEstado, Set<Id> idsProduto) {
+    private static List<Imposto__c> queryImpostoComEstadosProd(Set<Id> idsEstado, Set<Id> idsProduto) {
         return [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
                     FROM Imposto__c 
                     WHERE (Status__c = 'Aprovado' AND Estado__c IN :idsEstado AND Product__c IN :idsProduto)];
     }
 
-    private static List<Frete__c> queryFreteFromLocProd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia) {
+    private static List<Frete__c> queryFreteComLocProd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia) {
         return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Valor__c, CreatedDate 
                 FROM Frete__c 
                 WHERE (Status__c = 'Aprovado' AND 
