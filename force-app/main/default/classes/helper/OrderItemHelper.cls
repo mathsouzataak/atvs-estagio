@@ -40,7 +40,10 @@ public with sharing class OrderItemHelper {
     }
 
 
-    
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // Atribuição dos valores dos componentes de preço aos produtos do pedido
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     public static void atribuirImposto(List<OrderItem> itens, Map<String, Imposto__c> mapLocPropXImposto, Map<Id,Order> mapPedido) {
         for (OrderItem item : itens) {
             Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringFromKeys(
@@ -69,16 +72,21 @@ public with sharing class OrderItemHelper {
     }
 
     public static void atribuirMargem(List<OrderItem> itens, Map<String, Margem__c> mapLocProdAccXMargem, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
-        // for (OrderItem item : itens) {
-        //     Margem margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r);
+        for (OrderItem item : itens) {
+            Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account);
 
-        //     if (freteAplicado != null) {
-        //         item.ValorFrete__c = freteAplicado.Valor__c;
-        //     } else {
-        //         item.addError('O produto não possui frete aplicável para a localidade do pedido.');
-        //     }
-        // }
+            if (margemAplicada != null) {
+                // cálculo de porcentagem aqui 
+            } else {
+                item.addError('O produto não possui frete aplicável para a localidade do pedido.');
+            }
+        }
     }
+
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // Geração de maps relacionando strings únicas de parâmetros chave a cada 
+    // componente de precificação correspondente
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     public static Map<String, Frete__c> getMapLocProdXFrete(List<Frete__c> fretes) {
         Map<String, Frete__c> mapLocProdXFrete = new Map<String, Frete__c>();
@@ -113,6 +121,10 @@ public with sharing class OrderItemHelper {
     }
 
 
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // Queries por ID
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     private static List<Order> queryPedidoComIds(Set<Id> ids) {
         return [SELECT Id, AccountAddress__c, AccountId 
                 FROM Order 
@@ -124,7 +136,13 @@ public with sharing class OrderItemHelper {
                 FROM Product2
                 WHERE Id IN :ids];
     }
-    
+
+
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // Busca pelo componente de precificação que mmelhor corresponda aos
+    // paraâmetros fornecidos
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFrete, Product2 produto, Cidade__c cidade) {
         Frete__c freteAplicavel;
 
