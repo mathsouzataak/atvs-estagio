@@ -32,8 +32,8 @@ public with sharing class FreteHelper {
 
     public static Id getLocalidadeId(Frete__c frete) {
         return String.isNotBlank(frete.Cidade__c) ? frete.Cidade__c :
-                                String.isNotBlank(frete.Estado__c) ? frete.Estado__c : 
-                                    frete.Pais__c;
+                                (String.isNotBlank(frete.Estado__c) ? frete.Estado__c : 
+                                    frete.Pais__c);
     }
 
     public static Id getProdutoId(Frete__c frete) {

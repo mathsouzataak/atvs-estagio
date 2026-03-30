@@ -1,6 +1,10 @@
 public with sharing class OrderItemHelper {
-    
+
     public static void atribuirParametros(List<OrderItem> itens) {
+        atribuirParametros(itens, true, true, true);
+    }
+    
+    public static void atribuirParametros(List<OrderItem> itens, Boolean updateImposto, Boolean updateFrete, Boolean updateMargem) {
 
         Set<Id> idsProduto = new Set<Id>();
         Set<Id> idsPedido = new Set<Id>();
@@ -15,13 +19,15 @@ public with sharing class OrderItemHelper {
         Set<Id> idsPais = new Set<Id>();
         Set<Id> idsConta = new Set<Id>();
         Set<Id> idsGrupoConta = new Set<Id>();
+        set<Id> idsCentroDist = new Set<Id>();
         for (Order pedido : queryPedidoComIds(idsPedido)) {
             mapPedido.put(pedido.Id, pedido);
             idsCidade.add(pedido.AccountAddress__r.Cidade__c);
             idsEstado.add(pedido.AccountAddress__r.Cidade__r.Estado__c);
             idsPais.add(pedido.AccountAddress__r.Cidade__r.Estado__r.Pais__c);
             idsConta.add(pedido.AccountId);
-            idsGrupoConta.add(pedido.Account.GrupoClientes__c);
+            idsGrupoConta.add(pedido.Account.AccountGroup__c);
+            //idsCentroDist.add(pedido.CentroDistribuicao__c);
         }
 
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
@@ -31,12 +37,21 @@ public with sharing class OrderItemHelper {
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
-        Map<String, Imposto__c> mapLocPropXImposto = getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
-        Map<String, Frete__c> mapLocProdXFrete = getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
-        Map<String, Margem__c> mapLocProdAccXMargem = getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+        if (updateImposto) {
+            Map<String, Imposto__c> mapLocPropXImposto = getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
+            atribuirImposto(itens, mapLocPropXImposto, mapPedido);
+        }
 
-        atribuirImposto(itens, mapLocPropXImposto, mapPedido);
-        atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
+        if (updateFrete) {
+            Map<String, Frete__c> mapLocProdXFrete = getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
+            atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
+        }
+
+        if (updateMargem) {
+            Map<String, Margem__c> mapLocProdAccXMargem = getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+            atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
+        }
+
     }
 
 
@@ -46,6 +61,10 @@ public with sharing class OrderItemHelper {
 
     public static void atribuirImposto(List<OrderItem> itens, Map<String, Imposto__c> mapLocPropXImposto, Map<Id,Order> mapPedido) {
         for (OrderItem item : itens) {
+            if (item.hasErrors()) {
+                continue;
+            }
+
             Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringFromKeys(
                 mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
                 item.Product2Id
@@ -54,34 +73,45 @@ public with sharing class OrderItemHelper {
             if (impostoAplicado != null) {
                 item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
             } else { // Não foi encontrado imposto correspondente
-                item.addError('O produto não possui imposto aplicável no estado do pedido.');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing. (Imposto)');
             }
         }
     }
     
     public static void atribuirFrete(List<OrderItem> itens, Map<String, Frete__c> mapLocProdXFrete, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
         for (OrderItem item : itens) {
+            if (item.hasErrors()) {
+                continue;
+            }
+
             Frete__c freteAplicado = getFreteAplicavel(mapLocProdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r);
 
             if (freteAplicado != null) {
                 item.ValorFrete__c = freteAplicado.Valor__c;
             } else {
-                item.addError('O produto não possui frete aplicável para a localidade do pedido.');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.Frete');
             }
         }
     }
 
     public static void atribuirMargem(List<OrderItem> itens, Map<String, Margem__c> mapLocProdAccXMargem, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
         for (OrderItem item : itens) {
+            if (item.hasErrors()) {
+                continue;
+            }
+
             Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account);
 
             if (margemAplicada != null) {
-                // cálculo de porcentagem aqui 
+                if (item.ListPrice > 0 || item.ValorFrete__c > 0 || item.ImpostoPercent__c > 0) {
+                    item.MargemPercent__c = margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c));
+                }
             } else {
-                item.addError('O produto não possui frete aplicável para a localidade do pedido.');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de PricingMargem');
             }
         }
     }
+
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // Geração de maps relacionando strings únicas de parâmetros chave a cada 
@@ -126,7 +156,7 @@ public with sharing class OrderItemHelper {
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     private static List<Order> queryPedidoComIds(Set<Id> ids) {
-        return [SELECT Id, AccountAddress__c, AccountId 
+        return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c
                 FROM Order 
                 WHERE Id IN :ids];
     }
@@ -149,11 +179,11 @@ public with sharing class OrderItemHelper {
         for (Integer generalidadeProduto = 0; generalidadeProduto < 2; generalidadeProduto++) {
             for (Integer generalidadeLoc = 0; generalidadeLoc < 3; generalidadeLoc++) {
                 Id prod = generalidadeProduto == 0 ? produto.Id : produto.HierarquiaProduto__c;
-                Id loc = generalidadeLoc == 0 ? cidade.Id : generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c;
+                Id loc = generalidadeLoc == 0 ? cidade.Id : (generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c);
 
-                freteAplicavel = mapaFrete.get(KeyStringGenerator.createStringFromKeys(prod, loc));
+                freteAplicavel = mapaFrete.get(KeyStringGenerator.createStringFromKeys(loc, prod));
 
-                if (freteAplicavel == null) {
+                if (freteAplicavel != null) {
                     return freteAplicavel;
                 }
             }
@@ -170,11 +200,11 @@ public with sharing class OrderItemHelper {
                 for (Integer generalidadeLoc = 0; generalidadeLoc < 3; generalidadeLoc++) {
                     Id prod = generalidadeProduto == 0 ? produto.Id : produto.HierarquiaProduto__c;
                     Id loc = generalidadeLoc == 0 ? cidade.Id : generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c;
-                    Id acc = generalidadeAcc == 0 ? conta.Id : conta.GrupoClientes__c;
+                    Id acc = generalidadeAcc == 0 ? conta.Id : conta.AccountGroup__c;
 
-                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringFromKeys(prod, loc, acc));
+                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringFromKeys(loc, prod, acc));
 
-                    if (margemAplicavel == null) {
+                    if (margemAplicavel != null) {
                         return margemAplicavel;
                     }
                 }
