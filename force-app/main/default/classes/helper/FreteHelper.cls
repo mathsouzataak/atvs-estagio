@@ -49,4 +49,25 @@ public with sharing class FreteHelper {
                     (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia))];
     }
 
+    public static Map<String, Frete__c> getMapLocProdXFrete(List<Frete__c> fretes) {
+        Map<String, Frete__c> mapLocProdXFrete = new Map<String, Frete__c>();
+        for (Frete__c frete : fretes) {
+            Id idLocalidade = FreteHelper.getLocalidadeId(frete);
+            Id idProduto = FreteHelper.getProdutoId(frete);
+            mapLocProdXFrete.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto), frete);
+        }
+
+        return mapLocProdXFrete;
+    }
+
+
+    public static Map<String, Imposto__c> getMapLocProdXImposto(List<Imposto__c> impostos) {
+        Map<String, Imposto__c> mapLocPropXImposto = new Map<String,Imposto__c>();
+        for (Imposto__c imposto : impostos) {
+            mapLocPropXImposto.put(KeyStringGenerator.createStringFromKeys(imposto.Estado__c, imposto.Product__c), imposto);
+        }
+
+        return mapLocPropXImposto;
+    }
+
 }

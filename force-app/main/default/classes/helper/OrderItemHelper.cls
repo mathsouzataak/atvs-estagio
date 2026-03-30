@@ -20,35 +20,34 @@ public with sharing class OrderItemHelper {
         Set<Id> idsConta = new Set<Id>();
         Set<Id> idsGrupoConta = new Set<Id>();
         set<Id> idsCentroDist = new Set<Id>();
-        for (Order pedido : queryPedidoComIds(idsPedido)) {
+        for (Order pedido : OrderHelper.queryPedidoComIds(idsPedido)) {
             mapPedido.put(pedido.Id, pedido);
             idsCidade.add(pedido.AccountAddress__r.Cidade__c);
             idsEstado.add(pedido.AccountAddress__r.Cidade__r.Estado__c);
             idsPais.add(pedido.AccountAddress__r.Cidade__r.Estado__r.Pais__c);
             idsConta.add(pedido.AccountId);
             idsGrupoConta.add(pedido.Account.AccountGroup__c);
-            //idsCentroDist.add(pedido.CentroDistribuicao__c);
         }
 
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
         Set<Id> idsHierarquia = new Set<Id>();
-        for (Product2 produto : queryProdutoComIds(idsProduto)) {
+        for (Product2 produto : ProductHelper.queryProdutoComIds(idsProduto)) {
             mapProduto.put(produto.Id, produto);
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
         if (updateImposto) {
-            Map<String, Imposto__c> mapLocPropXImposto = getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
+            Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
             atribuirImposto(itens, mapLocPropXImposto, mapPedido);
         }
 
         if (updateFrete) {
-            Map<String, Frete__c> mapLocProdXFrete = getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
+            Map<String, Frete__c> mapLocProdXFrete = FreteHelper.getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
             atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
         }
 
         if (updateMargem) {
-            Map<String, Margem__c> mapLocProdAccXMargem = getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+            Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
             atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
         }
 
@@ -112,48 +111,6 @@ public with sharing class OrderItemHelper {
         }
     }
 
-
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // Geração de maps relacionando strings únicas de parâmetros chave a cada 
-    // componente de precificação correspondente
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    public static Map<String, Frete__c> getMapLocProdXFrete(List<Frete__c> fretes) {
-        Map<String, Frete__c> mapLocProdXFrete = new Map<String, Frete__c>();
-        for (Frete__c frete : fretes) {
-            Id idLocalidade = FreteHelper.getLocalidadeId(frete);
-            Id idProduto = FreteHelper.getProdutoId(frete);
-            mapLocProdXFrete.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto), frete);
-        }
-
-        return mapLocProdXFrete;
-    }
-
-    public static Map<String, Margem__c> getMapLocProdAccXMargem(List<Margem__c> margens) {
-        Map<String, Margem__c> mapLocProdAccXMargem = new Map<String, Margem__c>();
-        for (Margem__c margem : margens) {
-            Id idLocalidade = MargemHelper.getLocalidadeId(margem);
-            Id idProduto = MargemHelper.getProdutoId(margem);
-            Id idConta = MargemHelper.getContaId(margem);
-            mapLocProdAccXMargem.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto, idConta), margem);
-        }
-
-        return mapLocProdAccXMargem;
-    } 
-
-    public static Map<String, Imposto__c> getMapLocProdXImposto(List<Imposto__c> impostos) {
-        Map<String, Imposto__c> mapLocPropXImposto = new Map<String,Imposto__c>();
-        for (Imposto__c imposto : impostos) {
-            mapLocPropXImposto.put(KeyStringGenerator.createStringFromKeys(imposto.Estado__c, imposto.Product__c), imposto);
-        }
-
-        return mapLocPropXImposto;
-    }
-
-
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // Queries por ID
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     private static List<Order> queryPedidoComIds(Set<Id> ids) {
         return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c

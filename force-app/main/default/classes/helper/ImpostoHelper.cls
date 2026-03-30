@@ -32,5 +32,14 @@ public with sharing class ImpostoHelper {
                 FROM Imposto__c 
                 WHERE (Status__c = 'Aprovado' AND Estado__c IN :idsEstado AND Product__c IN :idsProduto)];
     }
+    
+    public static Map<String, Imposto__c> getMapLocProdXImposto(List<Imposto__c> impostos) {
+        Map<String, Imposto__c> mapLocPropXImposto = new Map<String,Imposto__c>();
+        for (Imposto__c imposto : impostos) {
+            mapLocPropXImposto.put(KeyStringGenerator.createStringFromKeys(imposto.Estado__c, imposto.Product__c), imposto);
+        }
+
+        return mapLocPropXImposto;
+    }
 
 }

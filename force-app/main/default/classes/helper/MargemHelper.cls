@@ -56,4 +56,16 @@ public with sharing class MargemHelper {
                     (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia) AND 
                     (Account__c IN :idsConta OR AccountGroup__c IN :idsGrupo))];
     }
+
+    public static Map<String, Margem__c> getMapLocProdAccXMargem(List<Margem__c> margens) {
+        Map<String, Margem__c> mapLocProdAccXMargem = new Map<String, Margem__c>();
+        for (Margem__c margem : margens) {
+            Id idLocalidade = MargemHelper.getLocalidadeId(margem);
+            Id idProduto = MargemHelper.getProdutoId(margem);
+            Id idConta = MargemHelper.getContaId(margem);
+            mapLocProdAccXMargem.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto, idConta), margem);
+        }
+
+        return mapLocProdAccXMargem;
+    } 
 }

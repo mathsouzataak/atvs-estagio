@@ -5,19 +5,26 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             return;
         }
 
-    }
-    
-    public override void afterUpdate() {
-        if (Trigger.new == null || Trigger.new.isEmpty()) {
-            return;
-        }
-        
-        Map<Id,Order> newEndereco = new Map<Id,Order>();
-        for (Integer i = 0; i < Trigger.new.size(); i++) {
-            if (((Order)(Trigger.new[i])).AccountAddress__c != ((Order)(Trigger.old[i])).AccountAddress__c) {
-                Trigger.new[i].addError('Não é possível atualizar a conta do pedido');
+        List<Order> newPedidos = (List<Order>)Trigger.new;
+        List<Order> oldPedidos = (List<Order>)Trigger.old;
+
+        Map<Id,Order> newEnderecoPedido = new Map<Id,Order>();
+        for (Integer i = 0; i < newPedidos.size(); i++) {
+            if (oldPedidos[i].Status == 'Activated') {
+                newPedidos[i].addError('O pedido está ativo e não pode ser alterado.');
+                continue;
+            }
+
+            if (newPedidos[i].AccountId != oldPedidos[i].AccountId) {
+                newPedidos[i].addError('A conta do pedido não pode ser alterada.');
+                continue;
+            }
+
+            if (newPedidos[i].AccountAddress__c != oldPedidos[i].AccountAddress__c) {
+                newEnderecoPedido.put(newPedidos[i].Id, newPedidos[i]);
             }
         }
+
     }
     
 }
