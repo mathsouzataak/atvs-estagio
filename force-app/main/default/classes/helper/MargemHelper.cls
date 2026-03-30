@@ -33,6 +33,7 @@ public with sharing class MargemHelper {
         }
     }
 
+    
     public static Id getLocalidadeId(Margem__c margem) {
         return String.isNotBlank(margem.Cidade__c) ? 
                 margem.Cidade__c : 

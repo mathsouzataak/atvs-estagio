@@ -1,10 +1,6 @@
 public with sharing class OrderItemHelper {
-
-    public static void atribuirParametros(List<OrderItem> itens) {
-        atribuirParametros(itens, true, true, true);
-    }
     
-    public static void atribuirParametros(List<OrderItem> itens, Boolean updateImposto, Boolean updateFrete, Boolean updateMargem) {
+    public static void atribuirParametros(List<OrderItem> itens) {
 
         Set<Id> idsProduto = new Set<Id>();
         Set<Id> idsPedido = new Set<Id>();
@@ -36,20 +32,18 @@ public with sharing class OrderItemHelper {
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
-        if (updateImposto) {
-            Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
-            atribuirImposto(itens, mapLocPropXImposto, mapPedido);
+        for (OrderItem item : itens) {
+            item.UnitPrice = mapProduto.get(item.Product2Id).CustoProducao__c;
         }
 
-        if (updateFrete) {
-            Map<String, Frete__c> mapLocProdXFrete = FreteHelper.getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
-            atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
-        }
+        Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
+        atribuirImposto(itens, mapLocPropXImposto, mapPedido);
 
-        if (updateMargem) {
-            Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
-            atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
-        }
+        Map<String, Frete__c> mapLocProdXFrete = FreteHelper.getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
+        atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
+
+        Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+        atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
 
     }
 
@@ -103,7 +97,7 @@ public with sharing class OrderItemHelper {
 
             if (margemAplicada != null) {
                 if (item.ListPrice > 0 || item.ValorFrete__c > 0 || item.ImpostoPercent__c > 0) {
-                    item.MargemPercent__c = margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c));
+                    item.MargemPercent__c = 100 * margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c / 100));
                 }
             } else {
                 item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de PricingMargem');
