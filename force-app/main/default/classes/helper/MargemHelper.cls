@@ -11,7 +11,7 @@ public with sharing class MargemHelper {
             Id produto = getProdutoId(margem);
             Id conta = getContaId(margem);
 
-            if (margemLocProdAccString.add(KeyStringGenerator.createStringFromKeys(localidade, produto, conta))) {
+            if (margemLocProdAccString.add(KeyStringGenerator.createStringKeyFromIds(localidade, produto, conta))) {
                 idsLocalidade.add(localidade);
                 idsProduto.add(produto);
                 idsConta.add(conta);
@@ -22,11 +22,11 @@ public with sharing class MargemHelper {
 
         Set<String> locProdutoPairOrg = new Set<String>();
         for (Margem__c margemOrg : queryMargemComLocProdAcc(idsLocalidade,idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsConta, idsConta)) {
-            locProdutoPairOrg.add(KeyStringGenerator.createStringFromKeys(getLocalidadeId(margemOrg), getProdutoId(margemOrg), getContaId(margemOrg)));
+            locProdutoPairOrg.add(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(margemOrg), getProdutoId(margemOrg), getContaId(margemOrg)));
         }
 
         for (Margem__c newMargem : newMargens) {
-            if (locProdutoPairOrg.contains(KeyStringGenerator.createStringFromKeys(getLocalidadeId(newMargem), getProdutoId(newMargem), getContaId(newMargem)))) {
+            if (locProdutoPairOrg.contains(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(newMargem), getProdutoId(newMargem), getContaId(newMargem)))) {
                 newMargem.addError('Já existe uma margem para esse produto/hierarquia e conta/grupo nesse estado.');
                 continue;
             }
@@ -64,7 +64,7 @@ public with sharing class MargemHelper {
             Id idLocalidade = MargemHelper.getLocalidadeId(margem);
             Id idProduto = MargemHelper.getProdutoId(margem);
             Id idConta = MargemHelper.getContaId(margem);
-            mapLocProdAccXMargem.put(KeyStringGenerator.createStringFromKeys(idLocalidade, idProduto, idConta), margem);
+            mapLocProdAccXMargem.put(KeyStringGenerator.createStringKeyFromIds(idLocalidade, idProduto, idConta), margem);
         }
 
         return mapLocProdAccXMargem;

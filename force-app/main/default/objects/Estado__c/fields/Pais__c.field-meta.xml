@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pais__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>País a que pertence o estado.</description>
+    <label>País</label>
+    <referenceTo>Pais__c</referenceTo>
+    <relationshipLabel>Estados</relationshipLabel>
+    <relationshipName>Estados</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

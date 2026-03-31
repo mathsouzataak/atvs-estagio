@@ -23,6 +23,7 @@ public with sharing class OrderItemHelper {
             idsPais.add(pedido.AccountAddress__r.Cidade__r.Estado__r.Pais__c);
             idsConta.add(pedido.AccountId);
             idsGrupoConta.add(pedido.Account.AccountGroup__c);
+            idsCentroDist.add(pedido.CentroDistribuicao__c);
         }
 
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
@@ -32,15 +33,11 @@ public with sharing class OrderItemHelper {
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
-        for (OrderItem item : itens) {
-            item.UnitPrice = mapProduto.get(item.Product2Id).CustoProducao__c;
-        }
-
         Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
         atribuirImposto(itens, mapLocPropXImposto, mapPedido);
 
-        Map<String, Frete__c> mapLocProdXFrete = FreteHelper.getMapLocProdXFrete(FreteHelper.queryFreteComLocProd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia));
-        atribuirFrete(itens, mapLocProdXFrete, mapPedido, mapProduto);
+        Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getmapLocProdCdXFrete(FreteHelper.queryFreteComLocProdCD(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
+        atribuirFrete(itens, mapLocProdCdXFrete, mapPedido, mapProduto);
 
         Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
         atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
@@ -58,7 +55,7 @@ public with sharing class OrderItemHelper {
                 continue;
             }
 
-            Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringFromKeys(
+            Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringKeyFromIds(
                 mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
                 item.Product2Id
             ));
@@ -66,23 +63,23 @@ public with sharing class OrderItemHelper {
             if (impostoAplicado != null) {
                 item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
             } else { // Não foi encontrado imposto correspondente
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing. (Imposto)');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
             }
         }
     }
     
-    public static void atribuirFrete(List<OrderItem> itens, Map<String, Frete__c> mapLocProdXFrete, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
+    public static void atribuirFrete(List<OrderItem> itens, Map<String, Frete__c> mapLocProdCdXFrete, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
         for (OrderItem item : itens) {
             if (item.hasErrors()) {
                 continue;
             }
 
-            Frete__c freteAplicado = getFreteAplicavel(mapLocProdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r);
+            Frete__c freteAplicado = getFreteAplicavel(mapLocProdCdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).CentroDistribuicao__c);
 
             if (freteAplicado != null) {
                 item.ValorFrete__c = freteAplicado.Valor__c;
             } else {
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.Frete');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
             }
         }
     }
@@ -100,22 +97,9 @@ public with sharing class OrderItemHelper {
                     item.MargemPercent__c = 100 * margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c / 100));
                 }
             } else {
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de PricingMargem');
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
             }
         }
-    }
-
-
-    private static List<Order> queryPedidoComIds(Set<Id> ids) {
-        return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c
-                FROM Order 
-                WHERE Id IN :ids];
-    }
-
-    private static List<Product2> queryProdutoComIds(Set<Id> ids) {
-        return [SELECT Id, HierarquiaProduto__c
-                FROM Product2
-                WHERE Id IN :ids];
     }
 
 
@@ -124,7 +108,7 @@ public with sharing class OrderItemHelper {
     // paraâmetros fornecidos
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFrete, Product2 produto, Cidade__c cidade) {
+    private static Frete__c getFreteAplicavel(Map<String,Frete__c> mapaFrete, Product2 produto, Cidade__c cidade, Id centroDist) {
         Frete__c freteAplicavel;
 
         for (Integer generalidadeProduto = 0; generalidadeProduto < 2; generalidadeProduto++) {
@@ -132,7 +116,7 @@ public with sharing class OrderItemHelper {
                 Id prod = generalidadeProduto == 0 ? produto.Id : produto.HierarquiaProduto__c;
                 Id loc = generalidadeLoc == 0 ? cidade.Id : (generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c);
 
-                freteAplicavel = mapaFrete.get(KeyStringGenerator.createStringFromKeys(loc, prod));
+                freteAplicavel = mapaFrete.get(KeyStringGenerator.createStringKeyFromIds(loc, prod, centroDist));
 
                 if (freteAplicavel != null) {
                     return freteAplicavel;
@@ -153,7 +137,7 @@ public with sharing class OrderItemHelper {
                     Id loc = generalidadeLoc == 0 ? cidade.Id : generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c;
                     Id acc = generalidadeAcc == 0 ? conta.Id : conta.AccountGroup__c;
 
-                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringFromKeys(loc, prod, acc));
+                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringKeyFromIds(loc, prod, acc));
 
                     if (margemAplicavel != null) {
                         return margemAplicavel;

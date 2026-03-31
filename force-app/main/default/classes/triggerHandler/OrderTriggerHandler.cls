@@ -19,12 +19,7 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 newPedidos[i].addError('A conta do pedido não pode ser alterada.');
                 continue;
             }
-
-            if (newPedidos[i].AccountAddress__c != oldPedidos[i].AccountAddress__c) {
-                newEnderecoPedido.put(newPedidos[i].Id, newPedidos[i]);
-            }
         }
-
     }
     
 }
