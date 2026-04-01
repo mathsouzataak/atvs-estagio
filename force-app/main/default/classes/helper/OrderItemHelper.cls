@@ -15,7 +15,7 @@ public with sharing class OrderItemHelper {
         Set<Id> idsPais = new Set<Id>();
         Set<Id> idsConta = new Set<Id>();
         Set<Id> idsGrupoConta = new Set<Id>();
-        set<Id> idsCentroDist = new Set<Id>();
+        Set<Id> idsCentroDist = new Set<Id>();
         for (Order pedido : OrderHelper.queryPedidoComIds(idsPedido)) {
             mapPedido.put(pedido.Id, pedido);
             idsCidade.add(pedido.AccountAddress__r.Cidade__c);
