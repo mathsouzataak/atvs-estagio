@@ -5,7 +5,7 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
             return;
         }
 
-        OrderItemHelper.atribuirParametros(Trigger.new);
+        OrderItemHelper.buscarEAtribuirParametros(Trigger.new);
     }
 
     public override void beforeUpdate() {
@@ -34,7 +34,7 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
             }
         }
         
-        OrderItemHelper.atribuirParametros(newProdPedidoItems);
+        OrderItemHelper.buscarEAtribuirParametros(newProdPedidoItems);
 
     }
 

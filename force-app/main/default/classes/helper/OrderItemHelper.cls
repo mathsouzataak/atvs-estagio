@@ -1,6 +1,6 @@
 public with sharing class OrderItemHelper {
     
-    public static void atribuirParametros(List<OrderItem> itens) {
+    public static void buscarEAtribuirParametros(List<OrderItem> itens) {
 
         Set<Id> idsProduto = new Set<Id>();
         Set<Id> idsPedido = new Set<Id>();
@@ -34,14 +34,16 @@ public with sharing class OrderItemHelper {
         }
 
         Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
-        atribuirImposto(itens, mapLocPropXImposto, mapPedido);
-
         Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getmapLocProdCdXFrete(FreteHelper.queryFreteComLocProdCD(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
-        atribuirFrete(itens, mapLocProdCdXFrete, mapPedido, mapProduto);
-
         Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
-        atribuirMargem(itens, mapLocProdAccXMargem, mapPedido, mapProduto);
 
+        Set<OrderItem> itensComErro = atribuirParametros(itens, mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
+
+        for (OrderItem item : itens) {
+            if (itensComErro.contains(item)) {
+                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing');
+            }
+        }
     }
 
 
@@ -49,56 +51,74 @@ public with sharing class OrderItemHelper {
     // Atribuição dos valores dos componentes de preço aos produtos do pedido
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    public static void atribuirImposto(List<OrderItem> itens, Map<String, Imposto__c> mapLocPropXImposto, Map<Id,Order> mapPedido) {
+    public static Set<OrderItem> atribuirParametros(List<OrderItem> itens, Map<String, Imposto__c> mapLocPropXImposto, Map<String, Frete__c> mapLocProdCdXFrete, Map<String, Margem__c> mapLocProdAccXMargem, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
+        Set<OrderItem> itensComErro = new Set<OrderItem>();
+
+
         for (OrderItem item : itens) {
-            if (item.hasErrors()) {
+            if (atribuirImposto(item, mapLocPropXImposto, mapPedido) && 
+                atribuirFrete(item, mapLocProdCdXFrete, mapPedido, mapProduto) && 
+                atribuirMargem(item, mapLocProdAccXMargem, mapPedido, mapProduto)) {
                 continue;
             }
 
-            Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringKeyFromIds(
-                mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
-                item.Product2Id
-            ));
-            
-            if (impostoAplicado != null) {
-                item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
-            } else { // Não foi encontrado imposto correspondente
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
-            }
+            itensComErro.add(item);
         }
-    }
-    
-    public static void atribuirFrete(List<OrderItem> itens, Map<String, Frete__c> mapLocProdCdXFrete, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
-        for (OrderItem item : itens) {
-            if (item.hasErrors()) {
-                continue;
-            }
 
-            Frete__c freteAplicado = getFreteAplicavel(mapLocProdCdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).CentroDistribuicao__c);
-
-            if (freteAplicado != null) {
-                item.ValorFrete__c = freteAplicado.Valor__c;
-            } else {
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
-            }
-        }
+        return itensComErro;
     }
 
-    public static void atribuirMargem(List<OrderItem> itens, Map<String, Margem__c> mapLocProdAccXMargem, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
-        for (OrderItem item : itens) {
-            if (item.hasErrors()) {
-                continue;
-            }
+    public static Boolean atribuirImposto(OrderItem item, Map<String, Imposto__c> mapLocPropXImposto, Map<Id,Order> mapPedido) {
+        if (item.hasErrors()) {
+            return false;
+        }
 
-            Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account);
+        Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringKeyFromIds(
+            mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
+            item.Product2Id
+        ));
+        
+        if (impostoAplicado != null) {
+            item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
+            return true;
+        } else {
+            System.debug('Imposto nao encontrado');
+            return false;
+        }
+    }
 
-            if (margemAplicada != null) {
-                if (item.ListPrice > 0 || item.ValorFrete__c > 0 || item.ImpostoPercent__c > 0) {
-                    item.MargemPercent__c = 100 * margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c / 100));
-                }
-            } else {
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing.');
+    public static Boolean atribuirFrete(OrderItem item, Map<String, Frete__c> mapLocProdCdXFrete, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
+        if (item.hasErrors()) {
+            return false;
+        }
+
+        Frete__c freteAplicado = getFreteAplicavel(mapLocProdCdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).CentroDistribuicao__c);
+
+        if (freteAplicado != null) {
+            item.ValorFrete__c = freteAplicado.Valor__c;
+            return true;
+        } else {
+            System.debug('Frete nao encontrado');
+            return false;
+        }
+    }
+
+    public static Boolean atribuirMargem(OrderItem item, Map<String, Margem__c> mapLocProdAccXMargem, Map<Id,Order> mapPedido, Map<Id,Product2> mapProduto) {
+        if (item.hasErrors()) {
+            return false;
+        }
+
+        Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account);
+
+        if (margemAplicada != null) {
+            if (item.ListPrice > 0 || item.ValorFrete__c > 0 || item.ImpostoPercent__c > 0) {
+                item.MargemPercent__c = 100 * margemAplicada.Valor__c / ((item.ListPrice + item.ValorFrete__c )*(1+ item.ImpostoPercent__c / 100));
+                return true;
             }
+                System.debug('Margem nao encontrada');
+                return false;
+        } else {
+            return false;
         }
     }
 

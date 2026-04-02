@@ -30,8 +30,6 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
 
         OrderHelper.atribuirParametrosOnUpdateAccount(newAddrCdPedido);
 
-
-
     }
     
 }

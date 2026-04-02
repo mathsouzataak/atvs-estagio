@@ -28,7 +28,7 @@ public with sharing class OrderHelper {
         for (Order pedido : queryPedidoComIds(mapNewPedidos.keySet())) {
             pedido.AccountAddress__c = mapNewPedidos.get(pedido.Id).AccountAddress__c;
             pedido.AccountAddress__r = mapEndereco.get(mapNewPedidos.get(pedido.Id).AccountAddress__c);
-            pedido.AccountAddress__c = mapNewPedidos.get(pedido.Id).CentroDistribuicao__c;
+            pedido.CentroDistribuicao__c = mapNewPedidos.get(pedido.Id).CentroDistribuicao__c;
             mapPedido.put(pedido.Id, pedido);
             idsConta.add(pedido.AccountId);
             idsGrupoConta.add(pedido.Account.AccountGroup__c);
@@ -38,7 +38,7 @@ public with sharing class OrderHelper {
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
         Set<Id> idsProduto = new Set<Id>();
         Set<Id> idsHierarquia = new Set<Id>();
-        for (OrderItem item : [SELECT Id, ListPrice, Product2Id, Product2.HierarquiaProduto__c
+        for (OrderItem item : [SELECT Id, OrderId, ListPrice, ValorFrete__c, Product2Id, Product2.HierarquiaProduto__c
                                 FROM OrderItem
                                 WHERE OrderId IN :mapNewPedidos.keySet()]) {
             mapItem.put(item.Id, item);
@@ -48,40 +48,34 @@ public with sharing class OrderHelper {
         }
 
         Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
-        OrderItemHelper.atribuirImposto(mapItem.values(), mapLocPropXImposto, mapPedido);
-
         Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getmapLocProdCdXFrete(FreteHelper.queryFreteComLocProdCD(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
-        OrderItemHelper.atribuirFrete(mapItem.values(), mapLocProdCdXFrete, mapPedido, mapProduto);
-
         Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
-        OrderItemHelper.atribuirMargem(mapItem.values(), mapLocProdAccXMargem, mapPedido, mapProduto);
 
+        Set<OrderItem> itensComErro = OrderItemHelper.atribuirParametros(mapItem.values(), mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
 
-       
-
+        filterErrors(mapNewPedidos, mapItem, itensComErro);
+        
         TriggerHandler.bypass('OrderItemTriggerHandler');
         Database.update(mapItem.values(), false);
         TriggerHandler.clearBypass('OrderItemTriggerHandler');
     }
 
 
-    private static void filterErrors(Map<Id,Order> mapPedido, Map<Id,OrderItem> mapItem) {
+    private static void filterErrors(Map<Id,Order> mapPedido, Map<Id,OrderItem> mapItem, Set<OrderItem> itensComErro) {
         for (OrderItem item : mapItem.values()) {
-            if (item.hasErrors() && !mapNewPedidos.get(item.OrderId).hasErrors()) {
-                mapNewPedidos.get(item.OrderId).addError('Esta alteração foi abortada, pois algum dos itens ficaria sem parâmetros de precificação.');
+            if (itensComErro.contains(item) && !mapPedido.get(item.OrderId).hasErrors()) {
+                mapPedido.get(item.OrderId).addError('Esta alteração foi abortada, pois algum dos itens ficaria sem parâmetros de precificação.');
             }
         }
 
-        for (OrderItem item : mapItem.values()) {
-            if (!item.hasErrors() && mapNewPedidos.get(item.OrderId).hasErrors()) {
-                item.addError('O pedido teve sua alteração abortada.');
-            }
+        for (OrderItem item : itensComErro) {
+            mapItem.remove(item.Id);
         }
     }
 
 
     public static List<Order> queryPedidoComIds(Set<Id> ids) {
-        return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c, CentroDistribuicao__c
+        return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c, CentroDistribuicao__c
                 FROM Order 
                 WHERE Id IN :ids];
     }
