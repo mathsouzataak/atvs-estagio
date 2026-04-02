@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Desconto__c</fullName>
-    <description>Desconto do preço de venda em relação ao preço final.</description>
-    <formula>IF( PrecoFinal__c &gt; UnitPrice , ( PrecoFinal__c - UnitPrice ) /  PrecoFinal__c, 0)</formula>
+    <fullName>Acrescimo__c</fullName>
+    <formula>IF( PrecoFinal__c &lt; UnitPrice , (UnitPrice - PrecoFinal__c) / PrecoFinal__c, 0)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
-    <label>Desconto</label>
+    <label>Acréscimo</label>
     <precision>18</precision>
     <required>false</required>
     <scale>2</scale>

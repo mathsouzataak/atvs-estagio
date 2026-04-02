@@ -4,6 +4,7 @@
     <columns>NAME</columns>
     <columns>Product__c</columns>
     <columns>HierarquiaProduto__c</columns>
+    <columns>CentroDistribuicao__c</columns>
     <columns>Cidade__c</columns>
     <columns>Estado__c</columns>
     <columns>Pais__c</columns>

@@ -38,9 +38,7 @@ public with sharing class OrderHelper {
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
         Set<Id> idsProduto = new Set<Id>();
         Set<Id> idsHierarquia = new Set<Id>();
-        for (OrderItem item : [SELECT Id, OrderId, ListPrice, ValorFrete__c, Product2Id, Product2.HierarquiaProduto__c
-                                FROM OrderItem
-                                WHERE OrderId IN :mapNewPedidos.keySet()]) {
+        for (OrderItem item : OrderItemHelper.queryOrderItemComOrderIds(mapNewPedidos.keySet())) {
             mapItem.put(item.Id, item);
             mapProduto.put(item.Product2Id, item.Product2);
             idsProduto.add(item.Product2Id);
@@ -51,7 +49,7 @@ public with sharing class OrderHelper {
         Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getmapLocProdCdXFrete(FreteHelper.queryFreteComLocProdCD(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
         Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
 
-        Set<OrderItem> itensComErro = OrderItemHelper.atribuirParametros(mapItem.values(), mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
+        Set<OrderItem> itensComErro = PricingHelper.atribuirParametros(mapItem.values(), mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
 
         filterErrors(mapNewPedidos, mapItem, itensComErro);
         
