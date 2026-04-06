@@ -21,8 +21,8 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             }
 
             if (!newPedidos[i].hasErrors() &&
-                (newPedidos[i].AccountAddress__c != oldPedidos[i].AccountAddress__c || 
-                newPedidos[i].CentroDistribuicao__c != oldPedidos[i].CentroDistribuicao__c)) {
+                    (newPedidos[i].AccountAddress__c != oldPedidos[i].AccountAddress__c || 
+                    newPedidos[i].CentroDistribuicao__c != oldPedidos[i].CentroDistribuicao__c)) {
                 newAddrCdPedido.put(newPedidos[i].Id, newPedidos[i]);
                 continue;
             }
