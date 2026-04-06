@@ -21,12 +21,12 @@ public with sharing class FreteHelper {
         }
 
         Set<String> locProdutoPairOrg = new Set<String>();
-        for (Frete__c freteOrg : queryFreteComLocProdCD(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsCentroDist)) {
+        for (Frete__c freteOrg : queryFreteComLocProdCd(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsCentroDist)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(freteOrg), getProdutoId(freteOrg), freteOrg.CentroDistribuicao__c));
         }
 
         for (Frete__c newFrete : newFretes) {
-            if (locProdutoPairOrg.contains(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(newFrete), getProdutoId(newFrete)))) {
+            if (locProdutoPairOrg.contains(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(newFrete), getProdutoId(newFrete), newFrete.CentroDistribuicao__c))) {
                 newFrete.addError('Já existe um frete para esse produto/hierarquia e centro de dist. nesse estado.');
                 continue;
             }
@@ -44,8 +44,12 @@ public with sharing class FreteHelper {
     }
 
 
-    public static List<Frete__c> queryFreteComLocProdCD(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
-        return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, CentroDistribuicao__c, Valor__c, CreatedDate 
+    public static List<Frete__c> queryFreteComLocProdCd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
+        return [SELECT Id, 
+                Cidade__c, Estado__c, Pais__c, 
+                Product__c, HierarquiaProduto__c, 
+                CentroDistribuicao__c, 
+                Valor__c 
                 FROM Frete__c 
                 WHERE (Status__c = 'Aprovado' AND 
                     (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
@@ -53,7 +57,7 @@ public with sharing class FreteHelper {
                     AND CentroDistribuicao__c IN :idsCentroDist];
     }
 
-    public static Map<String, Frete__c> getmapLocProdCdXFrete(List<Frete__c> fretes) {
+    public static Map<String, Frete__c> getMapLocProdCdXFrete(List<Frete__c> fretes) {
         Map<String, Frete__c> mapLocProdCdXFrete = new Map<String, Frete__c>();
         for (Frete__c frete : fretes) {
             Id idLocalidade = FreteHelper.getLocalidadeId(frete);
