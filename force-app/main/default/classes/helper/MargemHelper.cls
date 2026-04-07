@@ -51,9 +51,26 @@ public with sharing class MargemHelper {
     }
 
     public static List<Margem__c> queryMargemComLocProdAcc(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsConta, Set<Id> idsGrupo) {
-        return [SELECT Id, Cidade__c, Estado__c, Pais__c, Product__c, HierarquiaProduto__c, Account__c, AccountGroup__c, Valor__c 
+        return [SELECT Id, 
+                Cidade__c, Estado__c, Pais__c, 
+                Product__c, HierarquiaProduto__c, 
+                Account__c, AccountGroup__c, 
+                Valor__c 
                 FROM Margem__c 
                 WHERE ((Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                    (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia) AND 
+                    (Account__c IN :idsConta OR AccountGroup__c IN :idsGrupo))];
+    }
+
+    public static List<Margem__c> queryMargemAprovadaComLocProdAcc(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsConta, Set<Id> idsGrupo) {
+        return [SELECT Id, 
+                Cidade__c, Estado__c, Pais__c, 
+                Product__c, HierarquiaProduto__c, 
+                Account__c, AccountGroup__c, 
+                Valor__c 
+                FROM Margem__c 
+                WHERE (Status__c = 'Aprovado' AND 
+                    (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
                     (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia) AND 
                     (Account__c IN :idsConta OR AccountGroup__c IN :idsGrupo))];
     }

@@ -11,7 +11,7 @@ public with sharing class ProductHelper {
 
         List<PricebookEntry> itensCatalogo = new List<PricebookEntry>();
         for (Product2 produto : produtos) {
-            itensCatalogo.add(new PricebookEntry(Pricebook2Id = catalogo.Id, Product2Id = produto.Id, UnitPrice = produto.CustoProducao__c));
+            itensCatalogo.add(new PricebookEntry(Pricebook2Id = catalogo.Id, Product2Id = produto.Id, UnitPrice = produto.CustoProducao__c, IsActive = produto.IsActive));
         }
 
         Database.insert(itensCatalogo, false);

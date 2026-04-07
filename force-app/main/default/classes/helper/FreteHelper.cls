@@ -51,6 +51,18 @@ public with sharing class FreteHelper {
                 CentroDistribuicao__c, 
                 Valor__c 
                 FROM Frete__c 
+                WHERE ((Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
+                    (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia))
+                    AND CentroDistribuicao__c IN :idsCentroDist];
+    }
+
+    public static List<Frete__c> queryFreteAprovadoComLocProdCd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
+        return [SELECT Id, 
+                Cidade__c, Estado__c, Pais__c, 
+                Product__c, HierarquiaProduto__c, 
+                CentroDistribuicao__c, 
+                Valor__c 
+                FROM Frete__c 
                 WHERE (Status__c = 'Aprovado' AND 
                     (Cidade__c IN :idsCidade OR Estado__c IN :idsEstado OR Pais__c IN :idsPais) AND 
                     (Product__c IN :idsProduto OR HierarquiaProduto__c IN :idsHierarquia))

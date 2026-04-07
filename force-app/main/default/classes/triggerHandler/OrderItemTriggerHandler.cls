@@ -30,7 +30,7 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
 
             if (newItens[i].Product2Id != oldItens[i].Product2Id ||
                     newItens[i].ListPrice != oldItens[i].ListPrice ) {
-                newProdPedidoItems.add((OrderItem)Trigger.new[i]);
+                newProdPedidoItems.add(newItens[i]);
             }
         }
         

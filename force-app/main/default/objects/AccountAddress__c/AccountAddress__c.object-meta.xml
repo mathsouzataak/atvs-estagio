@@ -156,9 +156,8 @@
     <externalSharingModel>Private</externalSharingModel>
     <label>Account Address</label>
     <nameField>
-        <displayFormat>ADDR-{0000}</displayFormat>
         <label>Account Address Name</label>
-        <type>AutoNumber</type>
+        <type>Text</type>
     </nameField>
     <pluralLabel>Account Addresses</pluralLabel>
     <searchLayouts></searchLayouts>

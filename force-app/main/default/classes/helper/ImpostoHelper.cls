@@ -30,6 +30,12 @@ public with sharing class ImpostoHelper {
     public static List<Imposto__c> queryImpostoComEstadoProd(Set<Id> idsEstado, Set<Id> idsProduto) {
         return [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
                 FROM Imposto__c 
+                WHERE (Estado__c IN :idsEstado AND Product__c IN :idsProduto)];
+    }
+
+    public static List<Imposto__c> queryImpostoAprovadoComEstadoProd(Set<Id> idsEstado, Set<Id> idsProduto) {
+        return [SELECT Id, Estado__c, Product__c, ValorPercentual__c 
+                FROM Imposto__c 
                 WHERE (Status__c = 'Aprovado' AND Estado__c IN :idsEstado AND Product__c IN :idsProduto)];
     }
     

@@ -45,9 +45,9 @@ public with sharing class OrderHelper {
             idsHierarquia.add(item.Product2.HierarquiaProduto__c);
         }
 
-        Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoComEstadoProd(idsEstado, idsProduto));
-        Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getMapLocProdCdXFrete(FreteHelper.queryFreteComLocProdCd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
-        Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+        Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoAprovadoComEstadoProd(idsEstado, idsProduto));
+        Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getMapLocProdCdXFrete(FreteHelper.queryFreteAprovadoComLocProdCd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
+        Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemAprovadaComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
 
         Set<OrderItem> itensComErro = PricingHelper.atribuirParametros(mapItem.values(), mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
 
@@ -73,7 +73,10 @@ public with sharing class OrderHelper {
 
 
     public static List<Order> queryPedidoComIds(Set<Id> ids) {
-        return [SELECT Id, AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, AccountId, Account.AccountGroup__c, CentroDistribuicao__c
+        return [SELECT Id, 
+                AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, 
+                AccountId, Account.AccountGroup__c, 
+                CentroDistribuicao__c
                 FROM Order 
                 WHERE Id IN :ids];
     }
