@@ -21,7 +21,7 @@ public with sharing class FreteHelper {
         }
 
         Set<String> locProdutoPairOrg = new Set<String>();
-        for (Frete__c freteOrg : queryFreteComLocProdCd(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsCentroDist)) {
+        for (Frete__c freteOrg : queryFreteComParametros(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsCentroDist)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(freteOrg), getProdutoId(freteOrg), freteOrg.CentroDistribuicao__c));
         }
 
@@ -44,7 +44,7 @@ public with sharing class FreteHelper {
     }
 
 
-    public static List<Frete__c> queryFreteComLocProdCd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
+    public static List<Frete__c> queryFreteComParametros(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
         return [SELECT Id, 
                 Cidade__c, Estado__c, Pais__c, 
                 Product__c, HierarquiaProduto__c, 
@@ -56,7 +56,7 @@ public with sharing class FreteHelper {
                     AND CentroDistribuicao__c IN :idsCentroDist];
     }
 
-    public static List<Frete__c> queryFreteAprovadoComLocProdCd(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
+    public static List<Frete__c> queryFreteAprovadoComParametros(Set<Id> idsCidade, Set<Id> idsEstado, Set<Id> idsPais, Set<Id> idsProduto, Set<Id> idsHierarquia, Set<Id> idsCentroDist) {
         return [SELECT Id, 
                 Cidade__c, Estado__c, Pais__c, 
                 Product__c, HierarquiaProduto__c, 
@@ -69,7 +69,7 @@ public with sharing class FreteHelper {
                     AND CentroDistribuicao__c IN :idsCentroDist];
     }
 
-    public static Map<String, Frete__c> getMapLocProdCdXFrete(List<Frete__c> fretes) {
+    public static Map<String, Frete__c> getMapKeyXFrete(List<Frete__c> fretes) {
         Map<String, Frete__c> mapLocProdCdXFrete = new Map<String, Frete__c>();
         for (Frete__c frete : fretes) {
             Id idLocalidade = FreteHelper.getLocalidadeId(frete);

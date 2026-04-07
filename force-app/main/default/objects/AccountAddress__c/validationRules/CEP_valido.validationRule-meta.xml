@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>CEP_valido</fullName>
-    <active>true</active>
-    <description>O CEP deve ter formato válido</description>
-    <errorConditionFormula>NOT(REGEX( CEP__c , &quot;^\\d{2}\\d{3}[-]\\d{3}$&quot;))</errorConditionFormula>
-    <errorDisplayField>CEP__c</errorDisplayField>
-    <errorMessage>CEP em formato inválido</errorMessage>
-</ValidationRule>

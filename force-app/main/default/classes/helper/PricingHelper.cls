@@ -50,8 +50,11 @@ public class PricingHelper {
 
         Imposto__c impostoAplicado = mapLocPropXImposto.get(KeyStringGenerator.createStringKeyFromIds(
             mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
-            item.Product2Id
+            item.Product2Id,
+            mapPedido.get(item.OrderId).CentroDistribuicao__c
         ));
+
+        System.debug('Imposto Aplicado: ' + impostoAplicado?.toString());
         
         if (impostoAplicado != null) {
             item.ImpostoPercent__c = impostoAplicado.ValorPercentual__c;
@@ -77,6 +80,8 @@ public class PricingHelper {
 
         Frete__c freteAplicado = getFreteAplicavel(mapLocProdCdXFrete, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).CentroDistribuicao__c);
 
+        System.debug('Frete aplicado: ' + freteAplicado?.toString());
+
         if (freteAplicado != null) {
             item.ValorFrete__c = freteAplicado.Valor__c;
             return true;
@@ -99,7 +104,9 @@ public class PricingHelper {
             return false;
         }
 
-        Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account);
+        Margem__c margemAplicada = getMargemAplicavel(mapLocProdAccXMargem, mapProduto.get(item.Product2Id), mapPedido.get(item.OrderId).AccountAddress__r.Cidade__r, mapPedido.get(item.OrderId).Account, mapPedido.get(item.OrderId).CentroDistribuicao__c);
+
+        System.debug('Margem aplicada: ' + margemAplicada?.toString());
 
         if (margemAplicada != null) {
             if (item.ListPrice > 0 || item.ValorFrete__c > 0 || item.ImpostoPercent__c > 0) {
@@ -154,7 +161,7 @@ public class PricingHelper {
      * @param conta Conta com grupo de contas
      * @return Margem mais específica encontrada; null se não foi encontrada
      */
-    private static Margem__c getMargemAplicavel(Map<String,Margem__c> mapaMargem, Product2 produto, Cidade__c cidade, Account conta) {
+    private static Margem__c getMargemAplicavel(Map<String,Margem__c> mapaMargem, Product2 produto, Cidade__c cidade, Account conta, Id centroDist) {
         Margem__c margemAplicavel;
 
         for (Integer generalidadeProduto = 0; generalidadeProduto < 2; generalidadeProduto++) {
@@ -164,7 +171,7 @@ public class PricingHelper {
                     Id loc = generalidadeLoc == 0 ? cidade.Id : generalidadeLoc == 1 ? cidade.Estado__c : cidade.Estado__r.Pais__c;
                     Id acc = generalidadeAcc == 0 ? conta.Id : conta.AccountGroup__c;
 
-                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringKeyFromIds(loc, prod, acc));
+                    margemAplicavel = mapaMargem.get(KeyStringGenerator.createStringKeyFromIds(loc, prod, acc, centroDist));
 
                     if (margemAplicavel != null) {
                         return margemAplicavel;

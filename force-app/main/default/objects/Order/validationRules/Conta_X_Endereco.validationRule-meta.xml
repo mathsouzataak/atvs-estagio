@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Conta_X_Endereco</fullName>
-    <active>true</active>
-    <description>O endereço deve pertencer à conta</description>
-    <errorConditionFormula>AccountAddress__r.Account__c  &lt;&gt;  AccountId</errorConditionFormula>
-    <errorDisplayField>AccountAddress__c</errorDisplayField>
-    <errorMessage>Este endereço não pertence à conta selecionada.</errorMessage>
-</ValidationRule>

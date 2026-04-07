@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Preco_Not_Zero</fullName>
-    <active>true</active>
-    <description>O preço não pode ser igual a zero.</description>
-    <errorConditionFormula>ListPrice = 0</errorConditionFormula>
-    <errorDisplayField>ListPrice</errorDisplayField>
-    <errorMessage>O preço não pode ser zero.</errorMessage>
-</ValidationRule>

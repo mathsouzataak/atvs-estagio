@@ -45,9 +45,9 @@ public with sharing class OrderHelper {
             idsHierarquia.add(item.Product2.HierarquiaProduto__c);
         }
 
-        Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapLocProdXImposto(ImpostoHelper.queryImpostoAprovadoComEstadoProd(idsEstado, idsProduto));
-        Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getMapLocProdCdXFrete(FreteHelper.queryFreteAprovadoComLocProdCd(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
-        Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapLocProdAccXMargem(MargemHelper.queryMargemAprovadaComLocProdAcc(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta));
+        Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapKeyXImposto(ImpostoHelper.queryImpostoAprovadoComParametros(idsEstado, idsProduto, idsCentroDist));
+        Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getMapKeyXFrete(FreteHelper.queryFreteAprovadoComParametros(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
+        Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapKeyXMargem(MargemHelper.queryMargemAprovadaComParametros(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta, idsCentroDist));
 
         Set<OrderItem> itensComErro = PricingHelper.atribuirParametros(mapItem.values(), mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
 
