@@ -6,6 +6,7 @@ public with sharing class FreteHelper {
         Set<Id> idsCentroDist = new Set<Id>();
         Set<String> newFreteKey = new Set<String>();
 
+        // Buscar ids dos atributos e validando duplicatas na mesma carga
         for (Frete__c frete : newFretes) {
             Id localidade = getLocalidadeId(frete);
             Id produto = getProdutoId(frete);
@@ -20,11 +21,13 @@ public with sharing class FreteHelper {
             }
         }
 
+        // Buscar registros com os mesmos atributos 
         Set<String> locProdutoPairOrg = new Set<String>();
         for (Frete__c freteOrg : queryFreteComParametros(idsLocalidade, idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsCentroDist)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(freteOrg), getProdutoId(freteOrg), freteOrg.CentroDistribuicao__c));
         }
 
+        // Comparar novos registros com os da org, barrando duplicatas
         for (Frete__c newFrete : newFretes) {
             if (locProdutoPairOrg.contains(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(newFrete), getProdutoId(newFrete), newFrete.CentroDistribuicao__c))) {
                 newFrete.addError('Já existe um frete para esse produto/hierarquia e centro de dist. nesse estado.');

@@ -9,6 +9,7 @@ public with sharing class OrderItemHelper {
             idsPedido.add(item.OrderId);
         }
 
+        // Busca dos atributos relevantes dos pedidos relacionados
         Map<Id,Order> mapPedido = new Map<Id,Order>();
         Set<Id> idsCidade = new Set<Id>();
         Set<Id> idsEstado = new Set<Id>();
@@ -26,6 +27,7 @@ public with sharing class OrderItemHelper {
             idsCentroDist.add(pedido.CentroDistribuicao__c);
         }
 
+        // Busca dos atributos relevantes dos produtos relacionados
         Map<Id,Product2> mapProduto = new Map<Id,Product2>();
         Set<Id> idsHierarquia = new Set<Id>();
         for (Product2 produto : ProductHelper.queryProdutoComIds(idsProduto)) {
@@ -33,16 +35,17 @@ public with sharing class OrderItemHelper {
             idsHierarquia.add(produto.HierarquiaProduto__c);
         }
 
+        // Busca dos parâmetros de preço correspondentes aos atributos
         Map<String, Imposto__c> mapLocPropXImposto = ImpostoHelper.getMapKeyXImposto(ImpostoHelper.queryImpostoAprovadoComParametros(idsEstado, idsProduto, idsCentroDist));
         Map<String, Frete__c> mapLocProdCdXFrete = FreteHelper.getMapKeyXFrete(FreteHelper.queryFreteAprovadoComParametros(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsCentroDist));
         Map<String, Margem__c> mapLocProdAccXMargem = MargemHelper.getMapKeyXMargem(MargemHelper.queryMargemAprovadaComParametros(idsCidade, idsEstado, idsPais, idsProduto, idsHierarquia, idsConta, idsGrupoConta, idsCentroDist));
 
+        // Atribuição dos parâmetros correspondentes aos fretes
         Set<OrderItem> itensComErro = PricingHelper.atribuirParametros(itens, mapLocPropXImposto, mapLocProdCdXFrete, mapLocProdAccXMargem, mapPedido, mapProduto);
 
-        for (OrderItem item : itens) {
-            if (itensComErro.contains(item)) {
-                item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing');
-            }
+        // Atribuição de erros de DML aos itens com erros
+        for (OrderItem item : itensComErro) {
+            item.addError('Não está autorizada a venda deste produto devido à falta de parâmetros. Contate o time de Pricing');
         }
     }
 

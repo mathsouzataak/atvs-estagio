@@ -4,6 +4,7 @@ public with sharing class ProductTriggerHandler extends TriggerHandler {
             return;
         }
 
+        // Colocar código do campo Codigo__c no campo padrão ProductCode
         ProductHelper.putCodigoInProductCode(Trigger.new);
     }
 
@@ -12,6 +13,7 @@ public with sharing class ProductTriggerHandler extends TriggerHandler {
             return;
         }
 
+        // Criar entry no Pricebook padrão
         ProductHelper.createStandardPriceBookEntry(Trigger.new);
 
     }

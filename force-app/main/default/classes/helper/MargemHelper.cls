@@ -7,6 +7,7 @@ public with sharing class MargemHelper {
         Set<Id> idsConta = new Set<Id>();
         Set<String> margemLocProdAccString = new Set<String>();
 
+        // Buscar ids dos atributos e validando duplicatas na mesma carga
         for (Margem__c margem : newMargens) {
             Id localidade = getLocalidadeId(margem);
             Id produto = getProdutoId(margem);
@@ -22,11 +23,13 @@ public with sharing class MargemHelper {
             }
         }
 
+        // Buscar registros com os mesmos atributos 
         Set<String> locProdutoPairOrg = new Set<String>();
         for (Margem__c margemOrg : queryMargemComParametros(idsLocalidade,idsLocalidade, idsLocalidade, idsProduto, idsProduto, idsConta, idsConta, idsCentroDist)) {
             locProdutoPairOrg.add(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(margemOrg), getProdutoId(margemOrg), getContaId(margemOrg), margemOrg.CentroDistribuicao__c));
         }
 
+        // Comparar novos registros com os da org, barrando duplicatas
         for (Margem__c newMargem : newMargens) {
             if (locProdutoPairOrg.contains(KeyStringGenerator.createStringKeyFromIds(getLocalidadeId(newMargem), getProdutoId(newMargem), getContaId(newMargem), newMargem.CentroDistribuicao__c))) {
                 newMargem.addError('Já existe uma margem para esse produto/hierarquia e conta/grupo nesse estado.');

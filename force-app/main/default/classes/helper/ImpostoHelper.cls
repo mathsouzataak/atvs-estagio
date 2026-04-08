@@ -6,6 +6,7 @@ public with sharing class ImpostoHelper {
         Set<Id> idsCentroDist = new Set<Id>();
         Set<String> impostoKeys = new Set<String>();
 
+        // Buscar ids dos atributos e validando duplicatas na mesma carga
         for (Imposto__c imposto : newImpostos) {
             if (impostoKeys.add(KeyStringGenerator.createStringKeyFromIds(imposto.Estado__c, imposto.Product__c, imposto.CentroDistribuicao__c))) {
                 idsEstado.add(imposto.Estado__c);
@@ -16,11 +17,13 @@ public with sharing class ImpostoHelper {
             }
         }
 
+        // Buscar registros com os mesmos atributos 
         Set<String> impostosOrgKeys = new Set<String>();
         for (Imposto__c impostosOrg : queryImpostoComParametros(idsEstado, idsProduto, idsCentroDist)) {
             impostosOrgKeys.add(KeyStringGenerator.createStringKeyFromIds(impostosOrg.Estado__c, impostosOrg.Product__c, impostosOrg.CentroDistribuicao__c));
         }
 
+        // Comparar novos registros com os da org, barrando duplicatas
         for (Imposto__c newImposto : newImpostos) {
             if (impostosOrgKeys.contains(KeyStringGenerator.createStringKeyFromIds(newImposto.Estado__c, newImposto.Product__c, newImposto.CentroDistribuicao__c))) {
                 newImposto.addError('Já existe um imposto para esse produto nesse estado.');

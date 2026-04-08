@@ -1,4 +1,6 @@
 public with sharing class KeyStringGenerator {
+    // Criação de strings de Ids concateenados
+
     public static String createStringKeyFromIds(Id key1, Id key2) {
         return key1 + ':' + key2;
     }
