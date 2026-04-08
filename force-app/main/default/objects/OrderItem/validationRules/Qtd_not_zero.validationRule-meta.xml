@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Qtd_not_zero</fullName>
+    <active>true</active>
+    <description>A quantidade não pode ser maior que zero.</description>
+    <errorConditionFormula>Quantity &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Quantity</errorDisplayField>
+    <errorMessage>A quantidade deve ser maior que zero.</errorMessage>
+</ValidationRule>
