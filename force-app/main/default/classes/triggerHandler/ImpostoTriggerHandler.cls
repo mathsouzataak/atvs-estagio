@@ -6,7 +6,7 @@ public with sharing class ImpostoTriggerHandler extends TriggerHandler {
         }
 
 
-        ImpostoHelper.impedirDuplicidade(Trigger.new);
+        ImpostoHelper.preventDuplicity(Trigger.new);
     } 
 
 }

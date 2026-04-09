@@ -5,7 +5,7 @@ public with sharing class FreteTriggerHandler extends TriggerHandler {
             return;
         }
 
-        FreteHelper.impedirDuplicidade(Trigger.new);
+        FreteHelper.preventDuplicity(Trigger.new);
     }
 
 }

@@ -5,7 +5,7 @@ public with sharing class MargemTriggerHandler extends TriggerHandler {
             return;
         }
 
-        MargemHelper.impedirDuplicidade(Trigger.new);
+        MargemHelper.preventDuplicity(Trigger.new);
     }
 
 }

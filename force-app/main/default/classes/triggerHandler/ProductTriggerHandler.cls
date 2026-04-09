@@ -5,7 +5,7 @@ public with sharing class ProductTriggerHandler extends TriggerHandler {
         }
 
         // Colocar código do campo Codigo__c no campo padrão ProductCode
-        ProductHelper.putCodigoInProductCode(Trigger.new);
+        ProductHelper.putCustomCodeInProductCode(Trigger.new);
     }
 
     public override void afterInsert() {

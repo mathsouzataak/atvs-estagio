@@ -5,7 +5,7 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
             return;
         }
 
-        OrderItemHelper.buscarEAtribuirParametros(Trigger.new);
+        OrderItemHelper.searchAndAssignParameters(Trigger.new);
     }
 
     public override void beforeUpdate() {
@@ -13,26 +13,26 @@ public with sharing class OrderItemTriggerHandler extends TriggerHandler {
             return;
         }
 
-        List<OrderItem> newItens = (List<OrderItem>)Trigger.new;
-        List<OrderItem> oldItens = (List<OrderItem>)Trigger.old;
+        List<OrderItem> newItems = (List<OrderItem>)Trigger.new;
+        List<OrderItem> oldItems = (List<OrderItem>)Trigger.old;
 
-        List<OrderItem> newProdPedidoItems = new List<OrderItem>();
-        for (Integer i = 0; i < oldItens.size(); i++) {
+        List<OrderItem> newItemsWithUpdatedProduct = new List<OrderItem>();
+        for (Integer i = 0; i < oldItems.size(); i++) {
 
             // Tentativa de alterar pedido do item
-            if (newItens[i].OrderId != oldItens[i].OrderId) {
-                newItens[i].addError('O pedido do item não pode ser alterado');
+            if (newItems[i].OrderId != oldItems[i].OrderId) {
+                newItems[i].addError('O pedido do item não pode ser alterado');
                 continue;
             }
 
             // Alteração do produto do item - necessário atualizar parâmetros
-            if (newItens[i].Product2Id != oldItens[i].Product2Id ||
-                    newItens[i].ListPrice != oldItens[i].ListPrice ) {
-                newProdPedidoItems.add(newItens[i]);
+            if (newItems[i].Product2Id != oldItems[i].Product2Id ||
+                    newItems[i].ListPrice != oldItems[i].ListPrice ) {
+                newItemsWithUpdatedProduct.add(newItems[i]);
             }
         }
         
-        OrderItemHelper.buscarEAtribuirParametros(newProdPedidoItems);
+        OrderItemHelper.searchAndAssignParameters(newItemsWithUpdatedProduct);
 
     }
 
