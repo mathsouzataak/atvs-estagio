@@ -11,7 +11,7 @@ public class PricingHelper {
         
     /**
      * Atribui os componentes de preço aos OrderItem de uma lista
-     * @param itens Lista de OrderItem
+     * @param items Lista de OrderItem
      * @param mapStringKeyXTax Map de impostos com string de localidade + produto como key
      * @param mapStringKeyXFreight Map de fretes com string de localidade + produto + centro de dist. como key
      * @param mapStringKeyXMargin Map de margens com string de localidade + produto + conta como key
@@ -40,7 +40,7 @@ public class PricingHelper {
      * Atribui imposto a um OrderItem
      * @param item OrderItem para atribuição do imposto
      * @param mapStringKeyXTax Map de impostos com string de localidade + produto como key
-     * @param mapOrder Map de Order com seus Ids como key 
+     * @param mapOrder Map de Order com seus Ids como key
      * @return True se foi encontrado imposto aplicável; false caso contrário
      */
     public static Boolean applyTax(OrderItem item, Map<String, Imposto__c> mapStringKeyXTax, Map<Id,Order> mapOrder) {
@@ -70,7 +70,7 @@ public class PricingHelper {
      * @param item OrderItem para atribuição do frete
      * @param mapStringKeyXFreight Map de fretes com string de localidade + produto + centro de dist. como key
      * @param mapOrder Map de Order com seus Ids como key 
-     * @param mapProduct Map de Product2 com seus Ids como key 
+     * @param mapProduct Map de Product2 com seus Ids como key
      * @return True se foi encontrado frete aplicável; false caso contrário
      */
     public static Boolean applyFreight(OrderItem item, Map<String, Frete__c> mapStringKeyXFreight, Map<Id,Order> mapOrder, Map<Id,Product2> mapProduct) {
@@ -95,9 +95,9 @@ public class PricingHelper {
      * Atribui margem a um OrderItem
      * @param item OrderItem para atribuição do frete
      * @param mapStringKeyXMargin Map de margens com string de localidade + produto + conta como key
-     * @param mapOrder Map de Order com seus Ids como key 
-     * @param mapProduct Map de Product2 com seus Ids como key 
-     * @return True se foi encontrado margem aplicável; false caso contrário
+     * @param mapOrder Map de Order com seus Ids como key
+     * @param mapProduct Map de Product2 com seus Ids como key
+     * @return True se foi encontrada margem aplicável; false caso contrário
      */
     public static Boolean applyMargin(OrderItem item, Map<String, Margem__c> mapStringKeyXMargin, Map<Id,Order> mapOrder, Map<Id,Product2> mapProduct) {
         if (item.hasErrors()) {
@@ -122,21 +122,22 @@ public class PricingHelper {
 
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // Busca pelo componente de precificação que mmelhor corresponda aos
+    // Busca pelo componente de precificação que melhor corresponda aos
     // parâmetros fornecidos
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     /**
      * Encontra um frete aplicável aos parâmetros, segundo o critério de especificidade
-     * @param mapaFrete Map de fretes com string de localidade + produto + centro de dist. como key
-     * @param produto Produto com hierarquia de produto
-     * @param cidade Cidade com estado e país
-     * @param centroDist Id do centro de distribuição
+     * @param mapStringKeyXFreight Map de fretes com string de localidade + produto + centro de dist. como key
+     * @param product Produto com hierarquia de produto
+     * @param city Cidade com estado e país
+     * @param distCenterId Id do centro de distribuição
      * @return Frete mais específico encontrado; null se não foi encontrado
      */
     private static Frete__c getApplicableFreight(Map<String,Frete__c> mapStringKeyXFreight, Product2 product, Cidade__c city, Id distCenterId) {
         Frete__c applicableFreight;
 
+        // 6 iterações max
         for (Integer productGenerality = 0; productGenerality < 2; productGenerality++) {
             for (Integer locationGenerality = 0; locationGenerality < 3; locationGenerality++) {
                 Id productId = productGenerality == 0 ? product.Id : product.HierarquiaProduto__c;
@@ -155,15 +156,18 @@ public class PricingHelper {
 
     /**
      * Encontra uma margem aplicável aos parâmetros, segundo o critério de especificidade
-     * @param mapaMargem Map de margens com string de localidade + produto + conta como key
-     * @param produto Produto com hierarquia de produto
-     * @param cidade Cidade com estado e país
-     * @param conta Conta com grupo de contas
-     * @return Margem mais específica encontrada; null se não foi encontrada
+     * @param mapStringKeyXMargin Map de margens com string de localidade + produto + conta como key
+     * @param product Produto com hierarquia de produto
+     * @param city Cidade com estado e país
+     * @param account Conta com grupo de contas
+     * @param distCenterId Id do centro de distribuição
+     * @return Margem mais específica encontrada; null se não foi encontrada 
      */
     private static Margem__c getApplicableMargin(Map<String,Margem__c> mapStringKeyXMargin, Product2 product, Cidade__c city, Account account, Id distCenterId) {
         Margem__c applicableMargin;
 
+
+        // 12 iterações max
         for (Integer productGenerality = 0; productGenerality < 2; productGenerality++) {
             for (Integer accountGenerality = 0; accountGenerality < 2; accountGenerality++) {
                 for (Integer locationGenerality = 0; locationGenerality < 3; locationGenerality++) {
