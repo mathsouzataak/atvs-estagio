@@ -38,7 +38,7 @@ public with sharing class ImpostoHelper {
                 WHERE (Estado__c IN :stateIds AND Product__c IN :productIds AND CentroDistribuicao__c IN :distCenterIds)];
     }
 
-    public static List<Imposto__c> queryImpostoAprovadoComParametros(Set<Id> stateIds, Set<Id> productIds, Set<Id> distCenterIds) {
+    public static List<Imposto__c> queryApprovedTaxesWithFields(Set<Id> stateIds, Set<Id> productIds, Set<Id> distCenterIds) {
         return [SELECT Id, Estado__c, Product__c, ValorPercentual__c, CentroDistribuicao__c
                 FROM Imposto__c 
                 WHERE (Status__c = 'Aprovado' AND Estado__c IN :stateIds AND Product__c IN :productIds AND CentroDistribuicao__c IN :distCenterIds)];

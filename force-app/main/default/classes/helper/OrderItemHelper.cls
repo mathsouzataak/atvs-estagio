@@ -36,7 +36,7 @@ public with sharing class OrderItemHelper {
         }
 
         // Busca dos parâmetros de preço correspondentes aos atributos
-        Map<String, Imposto__c> mapStringKeyXTax = ImpostoHelper.getMapStringKeyXTax(ImpostoHelper.queryImpostoAprovadoComParametros(cityIds, productIds, distCenterIds));
+        Map<String, Imposto__c> mapStringKeyXTax = ImpostoHelper.getMapStringKeyXTax(ImpostoHelper.queryApprovedTaxesWithFields(cityIds, productIds, distCenterIds));
         Map<String, Frete__c> mapStringKeyXFreight = FreteHelper.getMapStringKeyXFreight(FreteHelper.queryApprovedFreightsWithFields(cityIds, stateIds, countryIds, productIds, prodHierarchyIds, distCenterIds));
         Map<String, Margem__c> mapStringKeyXMargin = MargemHelper.getMapStringKeyXMargin(MargemHelper.queryApprovedMarginWithFields(cityIds, stateIds, countryIds, productIds, prodHierarchyIds, accountIds, accountGroupIds, distCenterIds));
 

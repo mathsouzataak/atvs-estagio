@@ -1,18 +1,10 @@
 public with sharing class OrderItemTriggerHandler extends TriggerHandler {
 
     public override void beforeInsert() {
-        if (Trigger.new == null || Trigger.new.isEmpty()) {
-            return;
-        }
-
         OrderItemHelper.searchAndAssignParameters(Trigger.new);
     }
 
     public override void beforeUpdate() {
-        if (Trigger.new == null || Trigger.new.isEmpty()) {
-            return;
-        }
-
         List<OrderItem> newItems = (List<OrderItem>)Trigger.new;
         List<OrderItem> oldItems = (List<OrderItem>)Trigger.old;
 

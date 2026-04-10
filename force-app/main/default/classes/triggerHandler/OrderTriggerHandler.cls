@@ -1,10 +1,6 @@
 public with sharing class OrderTriggerHandler extends TriggerHandler {
 
     public override void beforeUpdate() {
-        if (Trigger.new == null || Trigger.new.isEmpty()) {
-            return;
-        }
-
         List<Order> newOrders = (List<Order>)Trigger.new;
         List<Order> oldOrders = (List<Order>)Trigger.old;
 
