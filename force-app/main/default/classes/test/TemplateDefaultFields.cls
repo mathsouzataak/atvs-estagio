@@ -71,7 +71,7 @@ public with sharing class TemplateDefaultFields {
     public class CidadeDefaults implements FieldDefaults {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
-                'Nam' => 'Estado ' + countSObjectCreated,
+                'Name' => 'Estado ' + countSObjectCreated,
                 'Codigo__c' => String.valueOf(countSObjectCreated).leftPad(7)
             };
         }
@@ -85,4 +85,32 @@ public with sharing class TemplateDefaultFields {
             };
         }
     }
+
+    public class ImpostoDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Status__c' => 'Aprovado',
+                'ValorPercentual__c' => countSObjectCreated
+            };
+        }
+    }
+
+    public class FreteDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Status__c' => 'Aprovado',
+                'Valor__c' => countSObjectCreated * 5
+            };
+        }
+    }
+
+    public class MargemDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Status__c' => 'Aprovado',
+                'Valor__c' => countSObjectCreated * 10
+            };
+        }
+    }
+
 }

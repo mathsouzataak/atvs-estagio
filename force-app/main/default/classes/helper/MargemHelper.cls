@@ -32,7 +32,7 @@ public with sharing class MargemHelper {
         // Comparar novos registros com os da org, barrando duplicatas
         for (Margem__c newMargin : newMargins) {
             if (marginsFromOrgStringKeys.contains(KeyStringGenerator.createStringKeyFromIds(getLocationId(newMargin), getProductId(newMargin), getAccountId(newMargin), newMargin.CentroDistribuicao__c))) {
-                newMargin.addError('Já existe uma margem para esse produto/hierarquia e conta/grupo nesse estado.');
+                newMargin.addError('Já existe uma margem para esse produto/hierarquia e conta/grupo nessa localidade.');
                 continue;
             }
         }
@@ -43,8 +43,7 @@ public with sharing class MargemHelper {
         return String.isNotBlank(margin.Cidade__c) ? 
                 margin.Cidade__c : 
                 String.isNotBlank(margin.Estado__c) ? 
-                    margin.Estado__c : 
-                    margin.Pais__c;
+                    margin.Estado__c : margin.Pais__c;
     }
 
     public static Id getProductId(Margem__c margin) {
@@ -59,7 +58,8 @@ public with sharing class MargemHelper {
         return [SELECT Id, 
                 Cidade__c, Estado__c, Pais__c, 
                 Product__c, HierarquiaProduto__c, 
-                Account__c, AccountGroup__c, 
+                Account__c, AccountGroup__c,
+                CentroDistribuicao__c,
                 Valor__c 
                 FROM Margem__c 
                 WHERE ((Cidade__c IN :cityIds OR Estado__c IN :stateIds OR Pais__c IN :countryIds) AND 

@@ -30,7 +30,7 @@ public with sharing class FreteHelper {
         // Comparar novos registros com os da org, barrando duplicatas
         for (Frete__c newFreight : newFreights) {
             if (freightsFromOrgStringKeys.contains(KeyStringGenerator.createStringKeyFromIds(getLocationId(newFreight), getProductId(newFreight), newFreight.CentroDistribuicao__c))) {
-                newFreight.addError('Já existe um frete para esse produto/hierarquia e centro de dist. nesse estado.');
+                newFreight.addError('Já existe um frete para esse produto/hierarquia e centro de dist. nessa localidade.');
                 continue;
             }
         }
@@ -38,8 +38,7 @@ public with sharing class FreteHelper {
 
     public static Id getLocationId(Frete__c freight) {
         return String.isNotBlank(freight.Cidade__c) ? freight.Cidade__c :
-                                (String.isNotBlank(freight.Estado__c) ? freight.Estado__c : 
-                                    freight.Pais__c);
+                                (String.isNotBlank(freight.Estado__c) ? freight.Estado__c : freight.Pais__c);
     }
 
     public static Id getProductId(Frete__c freight) {
