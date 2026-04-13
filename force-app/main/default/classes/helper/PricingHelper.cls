@@ -24,9 +24,9 @@ public class PricingHelper {
 
 
         for (OrderItem item : items) {
-            if (applyTax(item, mapStringKeyXTax, mapOrder) && 
-                    applyFreight(item, mapStringKeyXFreight, mapOrder, mapProduct) && 
-                    applyMargin(item, mapStringKeyXMargin, mapOrder, mapProduct)) {
+            if (applyTax(item, mapStringKeyXTax, mapOrder.get(item.OrderId)) && 
+                    applyFreight(item, mapStringKeyXFreight, mapOrder.get(item.OrderId), mapProduct.get(item.Product2Id)) && 
+                    applyMargin(item, mapStringKeyXMargin, mapOrder.get(item.OrderId), mapProduct.get(item.Product2Id))) {
                 continue;
             }
 
@@ -43,15 +43,15 @@ public class PricingHelper {
      * @param mapOrder Map de Order com seus Ids como key
      * @return True se foi encontrado imposto aplicável; false caso contrário
      */
-    public static Boolean applyTax(OrderItem item, Map<String, Imposto__c> mapStringKeyXTax, Map<Id,Order> mapOrder) {
+    public static Boolean applyTax(OrderItem item, Map<String, Imposto__c> mapStringKeyXTax, Order order) {
         if (item.hasErrors()) {
             return false;
         }
 
         Imposto__c taxToBeApplied = mapStringKeyXTax.get(KeyStringGenerator.createStringKeyFromIds(
-            mapOrder.get(item.OrderId).AccountAddress__r.Cidade__r.Estado__c, 
+            order.AccountAddress__r.Cidade__r.Estado__c, 
             item.Product2Id,
-            mapOrder.get(item.OrderId).CentroDistribuicao__c
+            order.CentroDistribuicao__c
         ));
 
         System.debug('Imposto Aplicado: ' + taxToBeApplied?.toString());
@@ -73,12 +73,12 @@ public class PricingHelper {
      * @param mapProduct Map de Product2 com seus Ids como key
      * @return True se foi encontrado frete aplicável; false caso contrário
      */
-    public static Boolean applyFreight(OrderItem item, Map<String, Frete__c> mapStringKeyXFreight, Map<Id,Order> mapOrder, Map<Id,Product2> mapProduct) {
+    public static Boolean applyFreight(OrderItem item, Map<String, Frete__c> mapStringKeyXFreight, Order order, Product2 product) {
         if (item.hasErrors()) {
             return false;
         }
 
-        Frete__c freightToBeApplied = getApplicableFreight(mapStringKeyXFreight, mapProduct.get(item.Product2Id), mapOrder.get(item.OrderId).AccountAddress__r.Cidade__r, mapOrder.get(item.OrderId).CentroDistribuicao__c);
+        Frete__c freightToBeApplied = getApplicableFreight(mapStringKeyXFreight, product, order.AccountAddress__r.Cidade__r, order.CentroDistribuicao__c);
 
         System.debug('Frete aplicado: ' + freightToBeApplied?.toString());
 
@@ -99,12 +99,12 @@ public class PricingHelper {
      * @param mapProduct Map de Product2 com seus Ids como key
      * @return True se foi encontrada margem aplicável; false caso contrário
      */
-    public static Boolean applyMargin(OrderItem item, Map<String, Margem__c> mapStringKeyXMargin, Map<Id,Order> mapOrder, Map<Id,Product2> mapProduct) {
+    public static Boolean applyMargin(OrderItem item, Map<String, Margem__c> mapStringKeyXMargin, Order order, Product2 product) {
         if (item.hasErrors()) {
             return false;
         }
 
-        Margem__c marginToBeApplied = getApplicableMargin(mapStringKeyXMargin, mapProduct.get(item.Product2Id), mapOrder.get(item.OrderId).AccountAddress__r.Cidade__r, mapOrder.get(item.OrderId).Account, mapOrder.get(item.OrderId).CentroDistribuicao__c);
+        Margem__c marginToBeApplied = getApplicableMargin(mapStringKeyXMargin, product, order.AccountAddress__r.Cidade__r, order.Account, order.CentroDistribuicao__c);
 
         System.debug('Margem aplicada: ' + marginToBeApplied?.toString());
 
@@ -134,6 +134,7 @@ public class PricingHelper {
      * @param distCenterId Id do centro de distribuição
      * @return Frete mais específico encontrado; null se não foi encontrado
      */
+    @TestVisible
     private static Frete__c getApplicableFreight(Map<String,Frete__c> mapStringKeyXFreight, Product2 product, Cidade__c city, Id distCenterId) {
         Frete__c applicableFreight;
 
@@ -163,6 +164,7 @@ public class PricingHelper {
      * @param distCenterId Id do centro de distribuição
      * @return Margem mais específica encontrada; null se não foi encontrada 
      */
+    @TestVisible
     private static Margem__c getApplicableMargin(Map<String,Margem__c> mapStringKeyXMargin, Product2 product, Cidade__c city, Account account, Id distCenterId) {
         Margem__c applicableMargin;
 

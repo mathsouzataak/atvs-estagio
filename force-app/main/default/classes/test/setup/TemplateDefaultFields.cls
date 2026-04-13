@@ -113,4 +113,13 @@ public with sharing class TemplateDefaultFields {
         }
     }
 
+    public class OrderDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'DataEntrega__c' => Date.today().addDays(countSObjectCreated),
+                'TipoFrete__c' => 'CIF'
+            };
+        }
+    }
+
 }
