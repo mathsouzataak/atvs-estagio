@@ -3,6 +3,8 @@ private with sharing class PricingTest {
     
     @IsTest 
     static void testGetMostSpecificFreight() {
+        Test.startTest();
+
         Product2 product = TestDataFactory.createProduct(true);
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
@@ -22,11 +24,15 @@ private with sharing class PricingTest {
 
         Frete__c selectedFreight = PricingHelper.getApplicableFreight(mapStringKeyXFrete, product, city, distCenter.Id);
 
+        Test.stopTest();
+
         Assert.areEqual(freights[5], selectedFreight, 'Não foi selecionado o frete mais específico.');
     }
 
     @IsTest 
     static void testGetMostSpecificMargin() {
+        Test.startTest();
+
         Product2 product = TestDataFactory.createProduct(true);
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
@@ -53,11 +59,15 @@ private with sharing class PricingTest {
 
         Margem__c selectedMargin = PricingHelper.getApplicableMargin(mapStringKeyXMargin, product, city, account, distCenter.Id);
 
+        Test.stopTest();
+
         Assert.areEqual(margins[11], selectedMargin, 'Não foi selecionada a margem mais específica.');
     }
 
     @IsTest 
     static void testGetLeastSpecificFreight() {
+        Test.startTest();
+
         Product2 product = TestDataFactory.createProduct(true);
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
@@ -72,11 +82,15 @@ private with sharing class PricingTest {
 
         Frete__c selectedFreight = PricingHelper.getApplicableFreight(mapStringKeyXFrete, product, city, distCenter.Id);
 
+        Test.stopTest();
+
         Assert.areEqual(freights[0], selectedFreight, 'Não foi selecionado frete.');
     }
 
     @IsTest 
     static void testGetLeastSpecificMargin() {
+        Test.startTest();
+
         Product2 product = TestDataFactory.createProduct(true);
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
@@ -92,10 +106,22 @@ private with sharing class PricingTest {
 
         Margem__c selectedMargin = PricingHelper.getApplicableMargin(mapStringKeyXMargin, product, city, account, distCenter.Id);
 
+        Test.stopTest();
+
         Assert.areEqual(margins[0], selectedMargin, 'Não foi selecionada a margem mais específica.');
     }
 
+    @IsTest
+    static void testOrderCreation() {
+        Order order = TestDataFactory.createOrder(true);
+    }
 
+    @IsTest(SeeAllData=true)
+    static void testOrderItemCreation() {
+        TriggerHandler.bypass('OrderItemTriggerHandler');
+        OrderItem orderItem = TestDataFactory.createOrderItem(true);
+        TriggerHandler.clearBypass('OrderItemTriggerHandler');
+    }
 
 
 

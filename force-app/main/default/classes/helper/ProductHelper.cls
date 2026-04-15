@@ -6,15 +6,19 @@ public with sharing class ProductHelper {
         }
     }
 
-    public static void createStandardPriceBookEntry(List<Product2> products) {
-        Pricebook2 pricebook = [SELECT Id FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
+    public static void createPriceBookEntryForNewProducts(List<Product2> products, Pricebook2 pricebook) {
 
         List<PricebookEntry> pricebookEntries = new List<PricebookEntry>();
         for (Product2 product : products) {
-            pricebookEntries.add(new PricebookEntry(Pricebook2Id = pricebook.Id, Product2Id = product.Id, UnitPrice = product.CustoProducao__c, IsActive = product.IsActive));
+            pricebookEntries.add(PricebookHelper.createPricebookEntryForInsertion(pricebook, product));
         }
 
+        System.debug(products);
+        System.debug(pricebookEntries);
+
         Database.insert(pricebookEntries, false);
+
+        System.debug(pricebookEntries[0].getErrors());
     }
 
     public static List<Product2> queryProductsWithIds(Set<Id> ids) {

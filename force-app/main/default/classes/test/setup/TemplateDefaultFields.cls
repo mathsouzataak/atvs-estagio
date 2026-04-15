@@ -36,7 +36,8 @@ public with sharing class TemplateDefaultFields {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
                 'Name' => 'Produto ' + countSObjectCreated,
-                'Codigo__c' => String.valueOf(countSObjectCreated).leftPad(50,'X')
+                'Codigo__c' => String.valueOf(countSObjectCreated).leftPad(50,'X'),
+                'IsActive' => true
             };
         }
     }
@@ -116,8 +117,48 @@ public with sharing class TemplateDefaultFields {
     public class OrderDefaults implements FieldDefaults {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
-                'DataEntrega__c' => Date.today().addDays(countSObjectCreated),
-                'TipoFrete__c' => 'CIF'
+                'EffectiveDate' => Date.today(),
+                'DataEntrega__c' => Date.today().addDays(Integer.valueOf(countSObjectCreated)),
+                'TipoFrete__c' => 'CIF',
+                'Status' => 'Draft'
+            };
+        }
+    }
+
+    public class AccountAddressDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Code__c' => 'teste' + countSObjectCreated,
+                'CEP__c' => '00000-111',
+                'Logradouro__c' => 'Rua teste 67',
+                'Bairro__c' => 'Bairro teste'
+            };
+        }
+    }
+
+    public class Pricebook2Defaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Name' => 'Test pricebook',
+                'IsActive' => true
+            };
+        }
+    }
+
+    public class CondicaoPagamentoDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'Name' => 'Test',
+                'Codigo__c' => 'test' + countSObjectCreated
+            };
+        }
+    }
+
+    public class OrderItemDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+            return new Map<String, Object>{
+                'UnitPrice' => countSObjectCreated * 100,
+                'Quantity' => Integer.valueOf(countSObjectCreated)
             };
         }
     }

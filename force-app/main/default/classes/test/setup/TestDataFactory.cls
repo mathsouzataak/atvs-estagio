@@ -55,9 +55,7 @@ public with sharing class TestDataFactory {
     public static Product2 createProduct(Id productHierarchyId, Boolean doInsert) {
         Product2 product = (Product2)TestFactorySObject.getInstance().createSObject(new Product2(HierarquiaProduto__c = productHierarchyId, CustoProducao__c = 5));
         if (doInsert) {
-            TriggerHandler.bypass('ProductTriggerHandler');
             Database.insert(product);
-            TriggerHandler.clearBypass('ProductTriggerHandler');
         }
 
         return product;
@@ -233,4 +231,114 @@ public with sharing class TestDataFactory {
         return createMargin(createProduct(true).Id, createAccount(true).Id, createCity(true).Id, createDistCenter(true).Id, doInsert);
     }
 
+
+    // +++++++++++++++++++++++++++++++++
+    // Create AccountAddress
+    // +++++++++++++++++++++++++++++++++
+
+    public static AccountAddress__c createAddress(Id accountId, Id cidadeId, Boolean doInsert) {
+        AccountAddress__c address = (AccountAddress__c)TestFactorySObject.getInstance().createSObject(new AccountAddress__c());
+        address.Account__c = accountId;
+        address.Cidade__c = cidadeId;
+
+        if (doInsert) {
+            Database.insert(address);
+        }
+
+        return address;
+    }
+
+    public static AccountAddress__c createAddress(Boolean doInsert) {
+        return createAddress(createAccount(true).Id, createCity(true).Id, doInsert);
+    }
+
+
+    // +++++++++++++++++++++++++++++++++
+    // Create CondicaoPagamento
+    // +++++++++++++++++++++++++++++++++
+
+    public static CondicaoPagamento__c createPaymentCondition(Boolean doInsert) {
+        CondicaoPagamento__c condition = (CondicaoPagamento__c)TestFactorySObject.getInstance().createSObject(new CondicaoPagamento__c());
+
+        if (doInsert) {
+            Database.insert(condition);
+        }
+
+        return condition;
+    }
+
+
+    // +++++++++++++++++++++++++++++++++
+    // Create Pricebook2
+    // +++++++++++++++++++++++++++++++++
+
+    public static Pricebook2 createPricebook(Boolean doInsert) {
+        Pricebook2 pricebook = (Pricebook2)TestFactorySObject.getInstance().createSObject(new Pricebook2());
+        if (doInsert) {
+            Database.insert(pricebook);
+        }
+
+        return pricebook;
+    }
+
+    public static PricebookEntry createPricebookEntry(Pricebook2 pricebook, Product2 product, Boolean doInsert) {
+        PricebookEntry pricebookEntry = PricebookHelper.createPricebookEntryForInsertion(pricebook, product);
+
+        if (doInsert) {
+            Database.insert(pricebookEntry);
+        }
+
+        return pricebookEntry;
+    }    
+
+
+    // +++++++++++++++++++++++++++++++++
+    // Create Order
+    // +++++++++++++++++++++++++++++++++
+
+    public static Order createOrder(Id accountId, Id addressId, Id distCenterId, Id pricebookId, Id payConditionId, Boolean doInsert) {
+        Order order = (Order)TestFactorySObject.getInstance().createSObject(new Order());
+        order.AccountId = accountId;
+        order.AccountAddress__c = addressId;
+        order.CentroDistribuicao__c = distCenterId;
+        order.Pricebook2Id = pricebookId;
+        order.CondicaoPagamento__c = payConditionId;
+
+        if (doInsert) {
+            Database.insert(order);
+        }
+
+        return order;
+    }
+
+    public static Order createOrder(Boolean doInsert) {
+        Account account = createAccount(true);
+        return createOrder(account.Id, createAddress(account.Id, createCity(true).Id, true).Id, createDistCenter(true).Id, PricebookHelper.getTestPricebook().Id, createPaymentCondition(true).Id, doInsert);
+    }
+
+
+    // +++++++++++++++++++++++++++++++++
+    // Create OrderItem
+    // +++++++++++++++++++++++++++++++++
+
+    public static OrderItem createOrderItem(Id productId, Id orderId, Id priceBookEntry, Boolean doInsert) {
+        OrderItem orderItem = (OrderItem)TestFactorySObject.getInstance().createSObject(new OrderItem());
+        orderItem.Product2Id = productId;
+        orderItem.OrderId = orderId;
+        orderItem.PricebookEntryId = priceBookEntry;
+
+        if(doInsert) {
+            Database.insert(orderItem); 
+        }
+
+        return orderItem;
+    }
+
+    public static OrderItem createOrderItem(Boolean doInsert) {
+        Account account = createAccount(true);
+        Pricebook2 pricebook = PricebookHelper.getTestPricebook();
+        Order order = createOrder(account.Id, createAddress(account.Id, createCity(true).Id, true).Id, createDistCenter(true).Id, pricebook.Id, createPaymentCondition(true).Id, doInsert);
+        Product2 product = createProduct(true);
+        return createOrderItem(product.Id, createOrder(true).Id, createPricebookEntry(pricebook, product, true).Id, doInsert);
+    }
 }
