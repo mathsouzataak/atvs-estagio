@@ -6,6 +6,6 @@ public with sharing class ProductTriggerHandler extends TriggerHandler {
 
     public override void afterInsert() {
         // Criar entry no Pricebook padrão
-        ProductHelper.createPriceBookEntryForNewProducts(Trigger.new, PricebookHelper.getStandardPricebook());
+        ProductHelper.createStandardPriceBookEntryForNewProducts(Trigger.new);
     }
 }

@@ -67,6 +67,8 @@ public with sharing class OrderHelper {
 
 
     private static void filterErrors(Map<Id,Order> mapOrder, Map<Id,OrderItem> mapOrderItem, Set<OrderItem> itemsWithError) {
+        System.debug('Itens com erro: ' + itemsWithError?.toString());
+
         for (OrderItem item : mapOrderItem.values()) {
             // Se o item tem erro, adicionar erro ao seu pedido
             if (itemsWithError.contains(item) && !mapOrder.get(item.OrderId).hasErrors()) {

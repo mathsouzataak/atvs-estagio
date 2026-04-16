@@ -35,10 +35,15 @@ public with sharing class OrderItemHelper {
             prodHierarchyIds.add(product.HierarquiaProduto__c);
         }
 
+        System.debug(mapOrder);
+        System.debug(mapProduct);
+
         // Busca dos parâmetros de preço correspondentes aos atributos
-        Map<String, Imposto__c> mapStringKeyXTax = ImpostoHelper.getMapStringKeyXTax(ImpostoHelper.queryApprovedTaxesWithFields(cityIds, productIds, distCenterIds));
+        Map<String, Imposto__c> mapStringKeyXTax = ImpostoHelper.getMapStringKeyXTax(ImpostoHelper.queryApprovedTaxesWithFields(stateIds, productIds, distCenterIds));
         Map<String, Frete__c> mapStringKeyXFreight = FreteHelper.getMapStringKeyXFreight(FreteHelper.queryApprovedFreightsWithFields(cityIds, stateIds, countryIds, productIds, prodHierarchyIds, distCenterIds));
         Map<String, Margem__c> mapStringKeyXMargin = MargemHelper.getMapStringKeyXMargin(MargemHelper.queryApprovedMarginWithFields(cityIds, stateIds, countryIds, productIds, prodHierarchyIds, accountIds, accountGroupIds, distCenterIds));
+
+        System.debug(mapStringKeyXTax);
 
         // Atribuição dos parâmetros correspondentes aos fretes
         Set<OrderItem> itemsWithError = PricingHelper.assignParameters(items, mapStringKeyXTax, mapStringKeyXFreight, mapStringKeyXMargin, mapOrder, mapProduct);

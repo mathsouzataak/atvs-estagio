@@ -5,7 +5,9 @@ public with sharing class MargemTeste {
     static void testBulkDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Margem__c margin1 = TestDataFactory.createMargin(false); 
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Margem__c margin2 = margin1.clone();
         List<Margem__c> margins = new List<Margem__c>{margin1, margin2};
 
@@ -24,7 +26,9 @@ public with sharing class MargemTeste {
     static void testOrgDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Margem__c margin1 = TestDataFactory.createMargin(true); 
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Margem__c margin2 = margin1.clone();
 
         Database.SaveResult result = Database.insert(margin2, false);
@@ -40,7 +44,9 @@ public with sharing class MargemTeste {
     static void testQuery() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Account account = TestDataFactory.createAccount(true);
         Estado__c state = TestDataFactory.createState(true);
         DistributionCenter__c distCenter1 = TestDataFactory.createDistCenter(true);
@@ -61,8 +67,10 @@ public with sharing class MargemTeste {
     static void testQueryApprovedWithBlockedRecord() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Margem__c margin2 = TestDataFactory.createMargin(false);
         Margem__c margin1 = TestDataFactory.createMargin(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         margin2.Status__c = 'Bloqueado';
         Database.insert(new List<Margem__c>{margin1, margin2});
 
@@ -78,8 +86,10 @@ public with sharing class MargemTeste {
     static void testGetStringKeyMap() {
         Test.startTest();
 
-        Margem__c margin1 = TestDataFactory.createMargin(false);
+        TriggerHandler.bypass('ProductTriggerHandler');
         Margem__c margin2 = TestDataFactory.createMargin(false);
+        Margem__c margin1 = TestDataFactory.createMargin(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         List<Margem__c> margins = new List<Margem__c>{margin1, margin2};
 
         Map<String, Margem__c> mapStringKeyXMargin = MargemHelper.getMapStringKeyXMargin(margins);

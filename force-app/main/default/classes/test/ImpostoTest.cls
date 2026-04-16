@@ -6,7 +6,9 @@ private with sharing class ImpostoTest {
     static void testBulkDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Imposto__c tax1 = TestDataFactory.createTax(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Imposto__c tax2 = tax1.clone();
         List<Imposto__c> taxes = new List<Imposto__c>{tax1, tax2};
 
@@ -24,7 +26,9 @@ private with sharing class ImpostoTest {
     static void testOrgDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Imposto__c tax1 = TestDataFactory.createTax(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Imposto__c tax2 = tax1.clone();
         TriggerHandler.clearBypass('ProductTriggerHandler');
 
@@ -41,7 +45,9 @@ private with sharing class ImpostoTest {
     static void testQuery() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         DistributionCenter__c distCenter1 = TestDataFactory.createDistCenter(true);
         DistributionCenter__c distCenter2 = TestDataFactory.createDistCenter(true);
@@ -61,8 +67,10 @@ private with sharing class ImpostoTest {
     static void testQueryApprovedWithBlockedRecord() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Imposto__c tax1 = TestDataFactory.createTax(false);
         Imposto__c tax2 = TestDataFactory.createTax(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         tax2.Status__c = 'Bloqueado';
         Database.insert(new List<Imposto__c>{tax1, tax2});
 
@@ -78,8 +86,10 @@ private with sharing class ImpostoTest {
     static void testGetStringKeyMap() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Imposto__c tax1 = TestDataFactory.createTax(false);
         Imposto__c tax2 = TestDataFactory.createTax(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         List<Imposto__c> taxes = new List<Imposto__c>{tax1, tax2};
 
         Map<String, Imposto__c> mapStringKeyXTax = ImpostoHelper.getMapStringKeyXTax(taxes);

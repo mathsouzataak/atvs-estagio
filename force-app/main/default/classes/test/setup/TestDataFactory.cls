@@ -313,7 +313,7 @@ public with sharing class TestDataFactory {
 
     public static Order createOrder(Boolean doInsert) {
         Account account = createAccount(true);
-        return createOrder(account.Id, createAddress(account.Id, createCity(true).Id, true).Id, createDistCenter(true).Id, PricebookHelper.getTestPricebook().Id, createPaymentCondition(true).Id, doInsert);
+        return createOrder(account.Id, createAddress(account.Id, createCity(true).Id, true).Id, createDistCenter(true).Id, PricebookHelper.getStandardPricebook().Id, createPaymentCondition(true).Id, doInsert);
     }
 
 
@@ -321,11 +321,12 @@ public with sharing class TestDataFactory {
     // Create OrderItem
     // +++++++++++++++++++++++++++++++++
 
-    public static OrderItem createOrderItem(Id productId, Id orderId, Id priceBookEntry, Boolean doInsert) {
+    public static OrderItem createOrderItem(Id productId, Id orderId, PricebookEntry pricebookEntry, Boolean doInsert) {
         OrderItem orderItem = (OrderItem)TestFactorySObject.getInstance().createSObject(new OrderItem());
         orderItem.Product2Id = productId;
         orderItem.OrderId = orderId;
-        orderItem.PricebookEntryId = priceBookEntry;
+        orderItem.PricebookEntryId = priceBookEntry.Id;
+        orderItem.ListPrice = pricebookEntry.UnitPrice;
 
         if(doInsert) {
             Database.insert(orderItem); 
@@ -336,9 +337,11 @@ public with sharing class TestDataFactory {
 
     public static OrderItem createOrderItem(Boolean doInsert) {
         Account account = createAccount(true);
-        Pricebook2 pricebook = PricebookHelper.getTestPricebook();
+        Pricebook2 pricebook = PricebookHelper.getStandardPricebook();
         Order order = createOrder(account.Id, createAddress(account.Id, createCity(true).Id, true).Id, createDistCenter(true).Id, pricebook.Id, createPaymentCondition(true).Id, doInsert);
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = createProduct(true);
-        return createOrderItem(product.Id, createOrder(true).Id, createPricebookEntry(pricebook, product, true).Id, doInsert);
+        TriggerHandler.bypass('ProductTriggerHandler');
+        return createOrderItem(product.Id, createOrder(true).Id, createPricebookEntry(pricebook, product, true), doInsert);
     }
 }

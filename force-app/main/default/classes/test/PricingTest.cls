@@ -5,7 +5,9 @@ private with sharing class PricingTest {
     static void testGetMostSpecificFreight() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
         city.Estado__r = state;
@@ -33,7 +35,9 @@ private with sharing class PricingTest {
     static void testGetMostSpecificMargin() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
         city.Estado__r = state;
@@ -68,7 +72,9 @@ private with sharing class PricingTest {
     static void testGetLeastSpecificFreight() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
         city.Estado__r = state;
@@ -91,7 +97,9 @@ private with sharing class PricingTest {
     static void testGetLeastSpecificMargin() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         Cidade__c city = TestDataFactory.createCity(state.Id, true);
         city.Estado__r = state;
@@ -109,6 +117,58 @@ private with sharing class PricingTest {
         Test.stopTest();
 
         Assert.areEqual(margins[0], selectedMargin, 'Não foi selecionada a margem mais específica.');
+    }
+
+    @IsTest
+    static void testAssignParameters() {
+        Test.startTest();
+
+        Product2 product = TestDataFactory.createProduct(true);
+        Estado__c state = TestDataFactory.createState(true);
+        Cidade__c city = TestDataFactory.createCity(state.Id, true);
+        city.Estado__r = state;
+        Account account = TestDataFactory.createAccount(true);
+        AccountAddress__c address = TestDataFactory.createAddress(account.Id, city.Id, true);
+        address.Cidade__r = city;
+        DistributionCenter__c distCenter = TestDataFactory.createDistCenter(true);
+
+        List<Imposto__c> taxes = new List<Imposto__c>{
+            TestDataFactory.createTax(product.Id, state.Id, distCenter.Id, false)
+        };
+
+        List<Margem__c> margins = new List<Margem__c>{
+            TestDataFactory.createMargin(product.Id, account.AccountGroup__c, state.Pais__c, distCenter.Id, false)
+        };
+
+        List<Frete__c> freights = new List<Frete__c>{
+            TestDataFactory.createFreight(product.Id, state.Pais__c, distCenter.Id, false)
+        };
+
+        Pricebook2 pricebook = PricebookHelper.getTestPricebook();
+        Order order = TestDataFactory.createOrder(account.Id, address.Id, distCenter.Id, pricebook.Id, TestDataFactory.createPaymentCondition(true).Id, true);
+        Order.Account = account;
+        Order.AccountAddress__r = address;
+
+        PricebookEntry pricebookEntry = TestDataFactory.createPricebookEntry(pricebook, product, true);
+
+        TriggerHandler.bypass('OrderItemTriggerHandler');
+        OrderItem orderItem = TestDataFactory.createOrderItem(product.Id, order.Id, pricebookEntry, false);
+        TriggerHandler.clearBypass('OrderItemTriggerHandler');
+
+        orderItem.ListPrice = pricebookEntry.UnitPrice;
+
+        Map<Id,Order> mapOrder = new Map<Id,Order>{order.Id => order};
+        Map<Id,Product2> mapProduct = new Map<Id,Product2>{product.Id => product};
+        List<OrderItem> items = new List<OrderItem>{orderItem};
+        
+        Set<OrderItem> errors = PricingHelper.assignParameters(items, ImpostoHelper.getMapStringKeyXTax(taxes), FreteHelper.getMapStringKeyXFreight(freights), MargemHelper.getMapStringKeyXMargin(margins), mapOrder, mapProduct);
+
+        Test.stopTest();
+
+        Assert.areEqual(0, errors.size(), 'A atribuição de parâmetros retornou erros.');
+        Assert.areEqual(taxes[0].ValorPercentual__c, orderItem.ImpostoPercent__c, 'O valor de imposto atribuído não é o esperado');
+        Assert.areEqual(freights[0].Valor__c, orderItem.ValorFrete__c, 'O valor de frete atribuído não é o esperado');
+        Assert.areEqual(100 * margins[0].Valor__c / ((orderItem.ListPrice + orderItem.ValorFrete__c )*(1+ orderItem.ImpostoPercent__c / 100)), orderItem.MargemPercent__c, 'O valor de frete atribuído não é o esperado');
     }
 
     @IsTest

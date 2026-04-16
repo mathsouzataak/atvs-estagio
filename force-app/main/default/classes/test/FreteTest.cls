@@ -5,7 +5,10 @@ private with sharing class FreteTest {
     static void testBulkDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Frete__c freight1 = TestDataFactory.createFreight(false); 
+        TriggerHandler.clearBypass('ProductTriggerHandler');
+
         Frete__c freight2 = freight1.clone();
         List<Frete__c> freights = new List<Frete__c>{freight1, freight2};
 
@@ -24,7 +27,9 @@ private with sharing class FreteTest {
     static void testOrgDuplicityOnInsert() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Frete__c freight1 = TestDataFactory.createFreight(true); 
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Frete__c freight2 = freight1.clone();
 
         Database.SaveResult result = Database.insert(freight2, false);
@@ -40,7 +45,9 @@ private with sharing class FreteTest {
     static void testQuery() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Product2 product = TestDataFactory.createProduct(true);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         Estado__c state = TestDataFactory.createState(true);
         DistributionCenter__c distCenter1 = TestDataFactory.createDistCenter(true);
         DistributionCenter__c distCenter2 = TestDataFactory.createDistCenter(true);
@@ -60,8 +67,11 @@ private with sharing class FreteTest {
     static void testQueryApprovedWithBlockedRecord() {
         Test.startTest();
 
+        TriggerHandler.bypass('ProductTriggerHandler');
         Frete__c freight2 = TestDataFactory.createFreight(false);
         Frete__c freight1 = TestDataFactory.createFreight(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
+
         freight2.Status__c = 'Bloqueado';
         Database.insert(new List<Frete__c>{freight1, freight2});
 
@@ -77,8 +87,10 @@ private with sharing class FreteTest {
     static void testGetStringKeyMap() {
         Test.startTest();
 
-        Frete__c freight1 = TestDataFactory.createFreight(false);
+        TriggerHandler.bypass('ProductTriggerHandler');
         Frete__c freight2 = TestDataFactory.createFreight(false);
+        Frete__c freight1 = TestDataFactory.createFreight(false);
+        TriggerHandler.clearBypass('ProductTriggerHandler');
         List<Frete__c> freights = new List<Frete__c>{freight1, freight2};
 
         Map<String, Frete__c> mapStringKeyXFreight = FreteHelper.getMapStringKeyXFreight(freights);

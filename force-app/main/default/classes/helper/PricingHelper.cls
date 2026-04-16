@@ -58,6 +58,7 @@ public class PricingHelper {
         
         if (taxToBeApplied != null) {
             item.ImpostoPercent__c = taxToBeApplied.ValorPercentual__c;
+            System.debug('Imposto no item: ' + item.ImpostoPercent__c);
             return true;
         } else {
             System.debug('Imposto nao encontrado');

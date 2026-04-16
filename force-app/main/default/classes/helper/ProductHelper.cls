@@ -6,7 +6,9 @@ public with sharing class ProductHelper {
         }
     }
 
-    public static void createPriceBookEntryForNewProducts(List<Product2> products, Pricebook2 pricebook) {
+    public static void createStandardPriceBookEntryForNewProducts(List<Product2> products) {
+
+        Pricebook2 pricebook = PricebookHelper.getStandardPricebook();
 
         List<PricebookEntry> pricebookEntries = new List<PricebookEntry>();
         for (Product2 product : products) {

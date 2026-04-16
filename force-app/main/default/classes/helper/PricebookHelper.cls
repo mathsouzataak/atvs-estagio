@@ -1,19 +1,9 @@
 public with sharing class PricebookHelper {
     
-    private static Pricebook2 standardPricebook;
     private static Pricebook2 testPricebook;
 
     public static Pricebook2 getStandardPricebook() {
-        if (standardPricebook == null) {
-            standardPricebook = [SELECT Id, IsActive FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
-        }
-
-        if (standardPricebook.IsActive) {
-            standardPricebook.IsActive = true;
-            Database.update(standardPricebook);
-        }
-
-        return standardPricebook;
+        return Test.isRunningTest() ? new Pricebook2(Id = Test.getStandardPricebookId()) : [SELECT Id, IsActive FROM Pricebook2 WHERE IsStandard = true LIMIT 1];
     }
 
     public static Pricebook2 getTestPricebook() {
