@@ -7,5 +7,5 @@
     <required>false</required>
     <trackHistory>false</trackHistory>
     <type>Text</type>
-    <unique>true</unique>
+    <unique>false</unique>
 </CustomField>
