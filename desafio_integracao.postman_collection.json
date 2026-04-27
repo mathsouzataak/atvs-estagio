@@ -157,7 +157,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}",
+              "raw": "{\n    \"Name\": \"Sorocaba Travels\",\n    \"CNPJ__c\": \"00000023000550\",\n    \"Phone\": \"00022211\",\n    \"ExternalId__c\": \"asdfghjkl\",\n    \"NumberOfEmployees\": 130,\n    \"Industry\": \"Transportation\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -292,7 +292,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"LastName\": \"Carlson\",\n    \"ExternalId__c\": \"abcdef\",\n    \"AccountId\": \"001gL00001777l0QAA\"\n}",
+              "raw": "{\n    \"LastName\": \"Pedrinho\",\n    \"AccountId\": \"001gL00001Gc87jQAB\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -562,7 +562,7 @@
               "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}"
             },
             "url": {
-              "raw": "{{endpoint}}/services/data/v64.0/query/?q=SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = qwertyuiop",
+              "raw": "{{endpoint}}/services/data/v64.0/query/?q=SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = 'asdfghjkl'",
               "host": [
                 "{{endpoint}}"
               ],
@@ -576,7 +576,7 @@
               "query": [
                 {
                   "key": "q",
-                  "value": "SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = qwertyuiop"
+                  "value": "SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = 'asdfghjkl'"
                 }
               ]
             }
@@ -958,6 +958,648 @@
                 }
               ],
               "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Composite API",
+      "item": [
+        {
+          "name": "Request Insert - Account & Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/Account\",\n            \"body\": {\n                \"Name\": \"TastyFoods\",\n                \"CNPJ__c\": \"77043981093284\",\n                \"Phone\": \"997656788\",\n                \"ExternalId__c\": \"tf1234\",\n                \"NumberOfEmployees\": 55,\n                \"Industry\": \"Food & Beverage\"\n            },\n            \"referenceId\": \"newAccount\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Name, ExternalId__c FROM Pricebook2 WHERE ExternalId__c = 'salamaleco'\",\n            \"referenceId\": \"selectedPricebook\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/Order\",\n            \"body\": {\n                \"ExternalId__c\": \"qwertyuiop09876\",\n                \"AccountId\": \"@{newAccount.id}\",\n                \"Status\": \"Draft\",\n                \"EffectiveDate\": \"2026-06-10\",\n                \"Pricebook2Id\": \"@{selectedPricebook.records[0].Id}\"\n            },\n            \"referenceId\": \"newOrder\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Product2Id, ExternalId__c FROM PricebookEntry WHERE ExternalId__c = 'abcde'\",\n            \"referenceId\": \"selectedPricebookEntry1\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/OrderItem\",\n            \"body\": {\n                \"ExternalId__c\": \"384ufih3ef\",\n                \"OrderId\": \"@{newOrder.id}\",\n                \"Quantity\": 5,\n                \"UnitPrice\": 3.50,\n                \"PricebookEntryId\": \"@{selectedPricebookEntry1.records[0].Id}\"\n            },  \n            \"referenceId\": \"newOrderItem1\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Product2Id, ExternalId__c FROM PricebookEntry WHERE ExternalId__c = '12345'\",\n            \"referenceId\": \"selectedPricebookEntry2\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/OrderItem\",\n            \"body\": {\n                \"ExternalId__c\": \"3294euhifw\",\n                \"OrderId\": \"@{newOrder.id}\",\n                \"Quantity\": 2,\n                \"UnitPrice\": 4.50,\n                \"PricebookEntryId\": \"@{selectedPricebookEntry2.records[0].Id}\"\n            },  \n            \"referenceId\": \"newOrderItem2\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/Account\",\n            \"body\": {\n                \"Name\": \"TastyFoods\",\n                \"CNPJ__c\": \"77043981093284\",\n                \"Phone\": \"997656788\",\n                \"ExternalId__c\": \"tf1234\",\n                \"NumberOfEmployees\": 55,\n                \"Industry\": \"Food & Beverage\"\n            },\n            \"referenceId\": \"newAccount\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Name, ExternalId__c FROM Pricebook2 WHERE ExternalId__c = 'salamaleco'\",\n            \"referenceId\": \"selectedPricebook\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/Order\",\n            \"body\": {\n                \"ExternalId__c\": \"qwertyuiop09876\",\n                \"AccountId\": \"@{newAccount.id}\",\n                \"Status\": \"Draft\",\n                \"EffectiveDate\": \"2026-06-10\",\n                \"Pricebook2Id\": \"@{selectedPricebook.records[0].Id}\"\n            },\n            \"referenceId\": \"newOrder\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Product2Id, ExternalId__c FROM PricebookEntry WHERE ExternalId__c = 'abcde'\",\n            \"referenceId\": \"selectedPricebookEntry1\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/OrderItem\",\n            \"body\": {\n                \"ExternalId__c\": \"384ufih3ef\",\n                \"OrderId\": \"@{newOrder.id}\",\n                \"Quantity\": 5,\n                \"UnitPrice\": 3.50,\n                \"PricebookEntryId\": \"@{selectedPricebookEntry1.records[0].Id}\"\n            },  \n            \"referenceId\": \"newOrderItem1\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, Product2Id, ExternalId__c FROM PricebookEntry WHERE ExternalId__c = '12345'\",\n            \"referenceId\": \"selectedPricebookEntry2\"\n        },\n        {\n            \"method\": \"POST\",\n            \"url\": \"/services/data/v64.0/sobjects/OrderItem\",\n            \"body\": {\n                \"ExternalId__c\": \"3294euhifw\",\n                \"OrderId\": \"@{newOrder.id}\",\n                \"Quantity\": 2,\n                \"UnitPrice\": 4.50,\n                \"PricebookEntryId\": \"@{selectedPricebookEntry2.records[0].Id}\"\n            },  \n            \"referenceId\": \"newOrderItem2\"\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 27 Apr 2026 14:30:42 GMT"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json;charset=UTF-8"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1125/15000"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "e86ef56e337bcf1b34ff48c2f08754cb"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "e86ef56e337bcf1b34ff48c2f08754cb"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"compositeResponse\": [\n        {\n            \"body\": {\n                \"id\": \"001gL00001GdQ7NQAV\",\n                \"success\": true,\n                \"errors\": []\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Account/001gL00001GdQ7NQAV\"\n            },\n            \"httpStatusCode\": 201,\n            \"referenceId\": \"newAccount\"\n        },\n        {\n            \"body\": {\n                \"totalSize\": 1,\n                \"done\": true,\n                \"records\": [\n                    {\n                        \"attributes\": {\n                            \"type\": \"Pricebook2\",\n                            \"url\": \"/services/data/v64.0/sobjects/Pricebook2/01sgL000007R1X3QAK\"\n                        },\n                        \"Id\": \"01sgL000007R1X3QAK\",\n                        \"Name\": \"Test1\",\n                        \"ExternalId__c\": \"salamaleco\"\n                    }\n                ]\n            },\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedPricebook\"\n        },\n        {\n            \"body\": {\n                \"id\": \"801gL00001GdQ7OQAV\",\n                \"success\": true,\n                \"errors\": []\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Order/801gL00001GdQ7OQAV\"\n            },\n            \"httpStatusCode\": 201,\n            \"referenceId\": \"newOrder\"\n        },\n        {\n            \"body\": {\n                \"totalSize\": 1,\n                \"done\": true,\n                \"records\": [\n                    {\n                        \"attributes\": {\n                            \"type\": \"PricebookEntry\",\n                            \"url\": \"/services/data/v64.0/sobjects/PricebookEntry/01ugL0000038OZhQAM\"\n                        },\n                        \"Id\": \"01ugL0000038OZhQAM\",\n                        \"Product2Id\": \"01tgL00000I1MH3QAN\",\n                        \"ExternalId__c\": \"abcde\"\n                    }\n                ]\n            },\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedPricebookEntry1\"\n        },\n        {\n            \"body\": {\n                \"id\": \"802gL00000Ncwc1QAB\",\n                \"success\": true,\n                \"errors\": []\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/OrderItem/802gL00000Ncwc1QAB\"\n            },\n            \"httpStatusCode\": 201,\n            \"referenceId\": \"newOrderItem1\"\n        },\n        {\n            \"body\": {\n                \"totalSize\": 1,\n                \"done\": true,\n                \"records\": [\n                    {\n                        \"attributes\": {\n                            \"type\": \"PricebookEntry\",\n                            \"url\": \"/services/data/v64.0/sobjects/PricebookEntry/01ugL0000038OmbQAE\"\n                        },\n                        \"Id\": \"01ugL0000038OmbQAE\",\n                        \"Product2Id\": \"01tgL00000I1jQXQAZ\",\n                        \"ExternalId__c\": \"12345\"\n                    }\n                ]\n            },\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedPricebookEntry2\"\n        },\n        {\n            \"body\": {\n                \"id\": \"802gL00000Ncwc2QAB\",\n                \"success\": true,\n                \"errors\": []\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/OrderItem/802gL00000Ncwc2QAB\"\n            },\n            \"httpStatusCode\": 201,\n            \"referenceId\": \"newOrderItem2\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Insert - Account & Order (Tree Nested)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"records\": [{\n        \"attributes\": {\"type\": \"Account\", \"referenceId\": \"newAccount\"},\n        \"Name\": \"EnginInd\",\n        \"CNPJ__c\": \"55555555555555\",\n        \"Phone\": \"0000101010\",\n        \"ExternalId__c\": \"testacc12345\",\n        \"NumberOfEmployees\": 200,\n        \"Industry\": \"Machinery\",\n        \"Orders\": {\n            \"records\": [{\n                \"attributes\": {\"type\": \"Order\", \"referenceId\": \"newOrder\"},\n                \"ExternalId__c\": \"testorder12345\",\n                \"Status\": \"Draft\",\n                \"EffectiveDate\": \"2026-06-13\",\n                \"Pricebook2Id\": \"01sgL000007R3H7QAK\",\n                \"OrderItems\": {\n                    \"records\": [\n                        {\n                            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"newOrderItem1\"},\n                            \"ExternalId__c\": \"qwerty\",\n                            \"Product2Id\": \"01tgL00000I3wmfQAB\",\n                            \"Quantity\": 2,\n                            \"UnitPrice\": 30000,\n                            \"PricebookEntryId\": \"01ugL0000038U8rQAE\"\n                        }, \n                        {\n                            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"newOrderItem2\"},\n                            \"ExternalId__c\": \"asdfg\",\n                            \"Product2Id\": \"01tgL00000I3vnNQAR\",\n                            \"Quantity\": 2,\n                            \"UnitPrice\": 30000,\n                            \"PricebookEntryId\": \"01ugL0000038U41QAE\"\n                        }\n                    ]\n                }\n            }]\n        }\n    }]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/tree/Account",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                "tree",
+                "Account"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"records\": [{\n        \"attributes\": {\"type\": \"Account\", \"referenceId\": \"newAccount\"},\n        \"Name\": \"EnginInd\",\n        \"CNPJ__c\": \"55555555555555\",\n        \"Phone\": \"0000101010\",\n        \"ExternalId__c\": \"testacc12345\",\n        \"NumberOfEmployees\": 200,\n        \"Industry\": \"Machinery\",\n        \"Orders\": {\n            \"records\": [{\n                \"attributes\": {\"type\": \"Order\", \"referenceId\": \"newOrder\"},\n                \"ExternalId__c\": \"testorder12345\",\n                \"Status\": \"Draft\",\n                \"EffectiveDate\": \"2026-06-13\",\n                \"Pricebook2Id\": \"01sgL000007R3H7QAK\",\n                \"OrderItems\": {\n                    \"records\": [\n                        {\n                            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"newOrderItem1\"},\n                            \"ExternalId__c\": \"qwerty\",\n                            \"Product2Id\": \"01tgL00000I3wmfQAB\",\n                            \"Quantity\": 2,\n                            \"UnitPrice\": 30000,\n                            \"PricebookEntryId\": \"01ugL0000038U8rQAE\"\n                        }, \n                        {\n                            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"newOrderItem2\"},\n                            \"ExternalId__c\": \"asdfg\",\n                            \"Product2Id\": \"01tgL00000I3vnNQAR\",\n                            \"Quantity\": 2,\n                            \"UnitPrice\": 30000,\n                            \"PricebookEntryId\": \"01ugL0000038U41QAE\"\n                        }\n                    ]\n                }\n            }]\n        }\n    }]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/tree/Account",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    "tree",
+                    "Account"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 201
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 27 Apr 2026 16:56:20 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1300/15000"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "5d1b6cc9e5720498c71b5ee639372959"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "5d1b6cc9e5720498c71b5ee639372959"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"hasErrors\": false,\n    \"results\": [\n        {\n            \"referenceId\": \"newAccount\",\n            \"id\": \"001gL00001GcvA2QAJ\"\n        },\n        {\n            \"referenceId\": \"newOrder\",\n            \"id\": \"801gL00001GcvA3QAJ\"\n        },\n        {\n            \"referenceId\": \"newOrderItem1\",\n            \"id\": \"802gL00000Nd2PkQAJ\"\n        },\n        {\n            \"referenceId\": \"newOrderItem2\",\n            \"id\": \"802gL00000Nd2PlQAJ\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Query - Account & Order & OrderItem",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/sobjects/Account/ExternalId__c/testacc12345\",\n            \"referenceId\": \"selectedAccount\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/testorder12345\",\n            \"referenceId\": \"selectedOrder\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, ExternalId__c, OrderId FROM OrderItem WHERE OrderId = '@{selectedOrder.Id}'\",\n            \"referenceId\": \"selectedOrderItems\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/sobjects/Account/ExternalId__c/testacc12345\",\n            \"referenceId\": \"selectedAccount\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/testorder12345\",\n            \"referenceId\": \"selectedOrder\"\n        },\n        {\n            \"method\": \"GET\",\n            \"url\": \"/services/data/v64.0/query/?q=SELECT Id, ExternalId__c, OrderId FROM OrderItem WHERE OrderId = '@{selectedOrder.Id}'\",\n            \"referenceId\": \"selectedOrderItems\"\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 27 Apr 2026 17:44:02 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1333/15000"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "ef19a1b06dc5c13fbae689982f62a1e0"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "ef19a1b06dc5c13fbae689982f62a1e0"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"compositeResponse\": [\n        {\n            \"body\": {\n                \"attributes\": {\n                    \"type\": \"Account\",\n                    \"url\": \"/services/data/v64.0/sobjects/Account/001gL00001GcvA2QAJ\"\n                },\n                \"Id\": \"001gL00001GcvA2QAJ\",\n                \"IsDeleted\": false,\n                \"MasterRecordId\": null,\n                \"Name\": \"EnginInd\",\n                \"Type\": null,\n                \"ParentId\": null,\n                \"BillingStreet\": null,\n                \"BillingCity\": null,\n                \"BillingState\": null,\n                \"BillingPostalCode\": null,\n                \"BillingCountry\": null,\n                \"BillingStateCode\": null,\n                \"BillingCountryCode\": null,\n                \"BillingLatitude\": null,\n                \"BillingLongitude\": null,\n                \"BillingGeocodeAccuracy\": null,\n                \"BillingAddress\": null,\n                \"ShippingStreet\": null,\n                \"ShippingCity\": null,\n                \"ShippingState\": null,\n                \"ShippingPostalCode\": null,\n                \"ShippingCountry\": null,\n                \"ShippingStateCode\": null,\n                \"ShippingCountryCode\": null,\n                \"ShippingLatitude\": null,\n                \"ShippingLongitude\": null,\n                \"ShippingGeocodeAccuracy\": null,\n                \"ShippingAddress\": null,\n                \"Phone\": \"0000101010\",\n                \"Fax\": null,\n                \"AccountNumber\": null,\n                \"Website\": null,\n                \"PhotoUrl\": \"/services/images/photo/001gL00001GcvA2QAJ\",\n                \"Sic\": null,\n                \"Industry\": \"Machinery\",\n                \"AnnualRevenue\": null,\n                \"NumberOfEmployees\": 200,\n                \"Ownership\": null,\n                \"TickerSymbol\": null,\n                \"Description\": null,\n                \"Rating\": null,\n                \"Site\": null,\n                \"OwnerId\": \"005gL00000I2UvhQAF\",\n                \"CreatedDate\": \"2026-04-27T16:56:19.000+0000\",\n                \"CreatedById\": \"005gL00000I2UvhQAF\",\n                \"LastModifiedDate\": \"2026-04-27T16:56:19.000+0000\",\n                \"LastModifiedById\": \"005gL00000I2UvhQAF\",\n                \"SystemModstamp\": \"2026-04-27T16:56:19.000+0000\",\n                \"LastActivityDate\": null,\n                \"LastViewedDate\": \"2026-04-27T17:40:33.000+0000\",\n                \"LastReferencedDate\": \"2026-04-27T17:40:33.000+0000\",\n                \"Jigsaw\": null,\n                \"JigsawCompanyId\": null,\n                \"CleanStatus\": \"Pending\",\n                \"AccountSource\": null,\n                \"DunsNumber\": null,\n                \"Tradestyle\": null,\n                \"NaicsCode\": null,\n                \"NaicsDesc\": null,\n                \"YearStarted\": null,\n                \"SicDesc\": null,\n                \"DandbCompanyId\": null,\n                \"OperatingHoursId\": null,\n                \"CustomerPriority__c\": null,\n                \"SLA__c\": null,\n                \"Active__c\": null,\n                \"NumberofLocations__c\": null,\n                \"UpsellOpportunity__c\": null,\n                \"SLASerialNumber__c\": null,\n                \"SLAExpirationDate__c\": null,\n                \"CNPJ__c\": \"55555555555555\",\n                \"ExternalId__c\": \"testacc12345\"\n            },\n            \"httpHeaders\": {\n                \"ETag\": \"\\\"gTI7lF2oYMlDxM+gTW1a62nzqxfxxihRqAygUNh9DPs=\\\"\",\n                \"Last-Modified\": \"Mon, 27 Apr 2026 16:56:19 GMT\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedAccount\"\n        },\n        {\n            \"body\": {\n                \"attributes\": {\n                    \"type\": \"Order\",\n                    \"url\": \"/services/data/v64.0/sobjects/Order/801gL00001GcvA3QAJ\"\n                },\n                \"Id\": \"801gL00001GcvA3QAJ\",\n                \"OwnerId\": \"005gL00000I2UvhQAF\",\n                \"ContractId\": null,\n                \"AccountId\": \"001gL00001GcvA2QAJ\",\n                \"Pricebook2Id\": \"01sgL000007R3H7QAK\",\n                \"OriginalOrderId\": null,\n                \"EffectiveDate\": \"2026-06-13\",\n                \"EndDate\": null,\n                \"IsReductionOrder\": false,\n                \"Status\": \"Draft\",\n                \"Description\": null,\n                \"CustomerAuthorizedById\": null,\n                \"CustomerAuthorizedDate\": null,\n                \"CompanyAuthorizedById\": null,\n                \"CompanyAuthorizedDate\": null,\n                \"Type\": null,\n                \"BillingStreet\": null,\n                \"BillingCity\": null,\n                \"BillingState\": null,\n                \"BillingPostalCode\": null,\n                \"BillingCountry\": null,\n                \"BillingStateCode\": null,\n                \"BillingCountryCode\": null,\n                \"BillingLatitude\": null,\n                \"BillingLongitude\": null,\n                \"BillingGeocodeAccuracy\": null,\n                \"BillingAddress\": null,\n                \"ShippingStreet\": null,\n                \"ShippingCity\": null,\n                \"ShippingState\": null,\n                \"ShippingPostalCode\": null,\n                \"ShippingCountry\": null,\n                \"ShippingStateCode\": null,\n                \"ShippingCountryCode\": null,\n                \"ShippingLatitude\": null,\n                \"ShippingLongitude\": null,\n                \"ShippingGeocodeAccuracy\": null,\n                \"ShippingAddress\": null,\n                \"Name\": null,\n                \"PoDate\": null,\n                \"PoNumber\": null,\n                \"OrderReferenceNumber\": null,\n                \"BillToContactId\": null,\n                \"ShipToContactId\": null,\n                \"ActivatedDate\": null,\n                \"ActivatedById\": null,\n                \"StatusCode\": \"Draft\",\n                \"OrderNumber\": \"00000111\",\n                \"TotalAmount\": 120000,\n                \"CreatedDate\": \"2026-04-27T16:56:19.000+0000\",\n                \"CreatedById\": \"005gL00000I2UvhQAF\",\n                \"LastModifiedDate\": \"2026-04-27T16:56:20.000+0000\",\n                \"LastModifiedById\": \"005gL00000I2UvhQAF\",\n                \"IsDeleted\": false,\n                \"SystemModstamp\": \"2026-04-27T16:56:20.000+0000\",\n                \"LastViewedDate\": \"2026-04-27T17:40:33.000+0000\",\n                \"LastReferencedDate\": \"2026-04-27T17:40:33.000+0000\",\n                \"ExternalId__c\": \"testorder12345\"\n            },\n            \"httpHeaders\": {\n                \"Last-Modified\": \"Mon, 27 Apr 2026 16:56:20 GMT\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedOrder\"\n        },\n        {\n            \"body\": {\n                \"totalSize\": 2,\n                \"done\": true,\n                \"records\": [\n                    {\n                        \"attributes\": {\n                            \"type\": \"OrderItem\",\n                            \"url\": \"/services/data/v64.0/sobjects/OrderItem/802gL00000Nd2PkQAJ\"\n                        },\n                        \"Id\": \"802gL00000Nd2PkQAJ\",\n                        \"ExternalId__c\": \"qwerty\",\n                        \"OrderId\": \"801gL00001GcvA3QAJ\"\n                    },\n                    {\n                        \"attributes\": {\n                            \"type\": \"OrderItem\",\n                            \"url\": \"/services/data/v64.0/sobjects/OrderItem/802gL00000Nd2PlQAJ\"\n                        },\n                        \"Id\": \"802gL00000Nd2PlQAJ\",\n                        \"ExternalId__c\": \"asdfg\",\n                        \"OrderId\": \"801gL00001GcvA3QAJ\"\n                    }\n                ]\n            },\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"selectedOrderItems\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Query - Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects/Order/?ids=801gL00001GfCTKQA3&fields=Id,AccountId,TotalAmount,ExternalId__c",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                "sobjects",
+                "Order",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "801gL00001GfCTKQA3"
+                },
+                {
+                  "key": "fields",
+                  "value": "Id,AccountId,TotalAmount,ExternalId__c",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects/Order/?ids=801gL00001GfCTKQA3&fields=Id,AccountId,TotalAmount,ExternalId__c",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    "sobjects",
+                    "Order",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "ids",
+                      "value": "801gL00001GfCTKQA3"
+                    },
+                    {
+                      "key": "fields",
+                      "value": "Id,AccountId,TotalAmount,ExternalId__c",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 27 Apr 2026 18:04:55 GMT"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json;charset=UTF-8"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1354/15000"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "48c220d8cf05f1948c1c2fe5ab40ad20"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "48c220d8cf05f1948c1c2fe5ab40ad20"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"attributes\": {\n            \"type\": \"Order\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/801gL00001GfCTKQA3\"\n        },\n        \"Id\": \"801gL00001GfCTKQA3\",\n        \"AccountId\": \"001gL00001GfCTJQA3\",\n        \"TotalAmount\": 26.5,\n        \"ExternalId__c\": \"qwertyuiop098768\"\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Request Update - Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"PATCH\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/testorder12345\",\n            \"body\": {\n                \"Status\": \"Activated\"\n            },\n            \"referenceId\": \"updatedOrder1\"\n        },\n        {\n            \"method\": \"PATCH\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/qwertyuiop20\",\n            \"body\": {\n                \"Status\": \"Activated\"\n            },\n            \"referenceId\": \"updatedOrder2\"\n\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"PATCH\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/testorder12345\",\n            \"body\": {\n                \"Status\": \"Activated\"\n            },\n            \"referenceId\": \"updatedOrder1\"\n        },\n        {\n            \"method\": \"PATCH\",\n            \"url\": \"/services/data/v64.0/sobjects/Order/ExternalId__c/qwertyuiop20\",\n            \"body\": {\n                \"Status\": \"Activated\"\n            },\n            \"referenceId\": \"updatedOrder2\"\n\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Mon, 27 Apr 2026 18:36:45 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1453/15000"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "e31bcf808964af3099e837592a18c568"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "e31bcf808964af3099e837592a18c568"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"compositeResponse\": [\n        {\n            \"body\": {\n                \"id\": \"801gL00001GcvA3QAJ\",\n                \"success\": true,\n                \"errors\": [],\n                \"created\": false\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Order/801gL00001GcvA3QAJ\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"updatedOrder1\"\n        },\n        {\n            \"body\": {\n                \"id\": \"801gL00001GdGklQAF\",\n                \"success\": true,\n                \"errors\": [],\n                \"created\": false\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Order/801gL00001GdGklQAF\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"updatedOrder2\"\n        }\n    ]\n}"
             }
           ]
         }
