@@ -1,0 +1,1039 @@
+{
+  "info": {
+    "_postman_id": "ec0e8708-2939-4d8a-bd3f-15afead0126d",
+    "name": "Desafio Integração",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54077793",
+    "_collection_link": "https://go.postman.co/collection/54077793-ec0e8708-2939-4d8a-bd3f-15afead0126d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Username-Password Auth (Connected App)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+                  "context.set(\"access_token\", '');",
+                  "context.set(\"endpoint\", '');",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    if (pm.response.to.have.status(200)) {",
+                  "        context.set(\"access_token\", jsonData.access_token);",
+                  "        context.set(\"endpoint\", jsonData.instance_url);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "username",
+                  "value": "{{username}}",
+                  "type": "text",
+                  "uuid": "6b52e631-e8db-47ce-a2e2-75343631113a"
+                },
+                {
+                  "key": "password",
+                  "value": "{{password}}{{securityToken}}",
+                  "type": "text",
+                  "uuid": "a54bfed8-4bfd-4bfc-87f0-a3c3ab5207c0"
+                },
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "aed9999b-9434-4767-96ac-da7c74375f0a"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}",
+                  "type": "text",
+                  "uuid": "afa1e99d-aa35-4c6e-913d-ba10abc910df"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}",
+                  "type": "text",
+                  "uuid": "5919bd94-3fe0-4068-8d2a-3a5ee17b57f9"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url}}/services/oauth2/token",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "services",
+                "oauth2",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Client Credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "const context = pm.environment.name ? pm.environment : pm.collectionVariables;",
+                  "context.set(\"access_token\", '');",
+                  "context.set(\"endpoint\", '');",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    if (pm.response.to.have.status(200)) {",
+                  "        context.set(\"access_token\", jsonData.access_token);",
+                  "        context.set(\"endpoint\", jsonData.instance_url);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{myDomain}}/services/oauth2/token?grant_type=client_credentials&client_id={{client_id}}&client_secret={{client_secret}}",
+              "host": [
+                "{{myDomain}}"
+              ],
+              "path": [
+                "services",
+                "oauth2",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "grant_type",
+                  "value": "client_credentials"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "REST API - Default",
+      "item": [
+        {
+          "name": "Request Insert - Account",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "sobjects",
+                "Account"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "sobjects",
+                    "Account"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 201
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 17:34:31 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "location",
+                  "value": "/services/data/v64.0/sobjects/Account/001gL00001777l0QAA"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1438/15000"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "963454115ed831e2ea5e11c85a257151"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "963454115ed831e2ea5e11c85a257151"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"id\": \"001gL00001777l0QAA\",\n    \"success\": true,\n    \"errors\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Insert - Contact",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"LastName\": \"Carlson\",\n    \"ExternalId__c\": \"abcdef\",\n    \"AccountId\": \"001gL00001777l0QAA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/sobjects/Contact",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "sobjects",
+                "Contact"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"LastName\": \"Wilson\",\n    \"AccountId\": \"001gL00001777l0QAA\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/sobjects/Contact",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "sobjects",
+                    "Contact"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 201
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 17:35:48 GMT"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json;charset=UTF-8"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1439/15000"
+                },
+                {
+                  "key": "location",
+                  "value": "/services/data/v64.0/sobjects/Contact/003gL00000h56f9QAA"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "39f64472236c64eb999bd82d6bff5a15"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "39f64472236c64eb999bd82d6bff5a15"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"003gL00000h56f9QAA\",\n    \"success\": true,\n    \"errors\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Query - Account (External Id)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "sobjects",
+                "Account",
+                "ExternalId__c",
+                ":EXTERNAL_ID"
+              ],
+              "variable": [
+                {
+                  "key": "EXTERNAL_ID",
+                  "value": "qwertyuiop"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "sobjects",
+                    "Account",
+                    "ExternalId__c",
+                    ":EXTERNAL_ID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "EXTERNAL_ID",
+                      "value": "qwertyuiop"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 18:23:53 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1570/15000"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "etag",
+                  "value": "\"gTI7lF2oYMlDxM+gTW1a62nzqxfxxihRqAygUNh9DPs=--gzip\""
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "last-modified",
+                  "value": "Fri, 24 Apr 2026 17:34:31 GMT"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "1ae9299dd20b562d6ef4b2ead2e85f1b"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "1ae9299dd20b562d6ef4b2ead2e85f1b"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"attributes\": {\n        \"type\": \"Account\",\n        \"url\": \"/services/data/v64.0/sobjects/Account/001gL00001777l0QAA\"\n    },\n    \"Id\": \"001gL00001777l0QAA\",\n    \"IsDeleted\": false,\n    \"MasterRecordId\": null,\n    \"Name\": \"Maxtech\",\n    \"Type\": null,\n    \"ParentId\": null,\n    \"BillingStreet\": null,\n    \"BillingCity\": null,\n    \"BillingState\": null,\n    \"BillingPostalCode\": null,\n    \"BillingCountry\": null,\n    \"BillingStateCode\": null,\n    \"BillingCountryCode\": null,\n    \"BillingLatitude\": null,\n    \"BillingLongitude\": null,\n    \"BillingGeocodeAccuracy\": null,\n    \"BillingAddress\": null,\n    \"ShippingStreet\": null,\n    \"ShippingCity\": null,\n    \"ShippingState\": null,\n    \"ShippingPostalCode\": null,\n    \"ShippingCountry\": null,\n    \"ShippingStateCode\": null,\n    \"ShippingCountryCode\": null,\n    \"ShippingLatitude\": null,\n    \"ShippingLongitude\": null,\n    \"ShippingGeocodeAccuracy\": null,\n    \"ShippingAddress\": null,\n    \"Phone\": \"00001111\",\n    \"Fax\": null,\n    \"AccountNumber\": null,\n    \"Website\": null,\n    \"PhotoUrl\": \"/services/images/photo/001gL00001777l0QAA\",\n    \"Sic\": null,\n    \"Industry\": \"Electronics\",\n    \"AnnualRevenue\": null,\n    \"NumberOfEmployees\": 30,\n    \"Ownership\": null,\n    \"TickerSymbol\": null,\n    \"Description\": null,\n    \"Rating\": null,\n    \"Site\": null,\n    \"OwnerId\": \"005gL00000I2UvhQAF\",\n    \"CreatedDate\": \"2026-04-24T17:34:31.000+0000\",\n    \"CreatedById\": \"005gL00000I2UvhQAF\",\n    \"LastModifiedDate\": \"2026-04-24T17:34:31.000+0000\",\n    \"LastModifiedById\": \"005gL00000I2UvhQAF\",\n    \"SystemModstamp\": \"2026-04-24T17:34:31.000+0000\",\n    \"LastActivityDate\": null,\n    \"LastViewedDate\": \"2026-04-24T18:22:42.000+0000\",\n    \"LastReferencedDate\": \"2026-04-24T18:22:42.000+0000\",\n    \"Jigsaw\": null,\n    \"JigsawCompanyId\": null,\n    \"CleanStatus\": \"Pending\",\n    \"AccountSource\": null,\n    \"DunsNumber\": null,\n    \"Tradestyle\": null,\n    \"NaicsCode\": null,\n    \"NaicsDesc\": null,\n    \"YearStarted\": null,\n    \"SicDesc\": null,\n    \"DandbCompanyId\": null,\n    \"OperatingHoursId\": null,\n    \"CustomerPriority__c\": null,\n    \"SLA__c\": null,\n    \"Active__c\": null,\n    \"NumberofLocations__c\": null,\n    \"UpsellOpportunity__c\": null,\n    \"SLASerialNumber__c\": null,\n    \"SLAExpirationDate__c\": null,\n    \"CNPJ__c\": \"00000000000554\",\n    \"ExternalId__c\": \"qwertyuiop\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Query - Account & Contacts (External Id)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/query/?q=SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = qwertyuiop",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "query",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = qwertyuiop"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"Name\": \"Maxtech\",\n    \"CNPJ__c\": \"00000000000554\",\n    \"Phone\": \"00001111\",\n    \"ExternalId__c\": \"qwertyuiop\",\n    \"NumberOfEmployees\": \"30\",\n    \"Industry\": \"Electronics\"\n}"
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/query/?q=SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = 'qwertyuiop'",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "query",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "SELECT Id, Name, Phone, ExternalId__c, (SELECT Id, Name FROM Contacts) FROM Account WHERE ExternalId__c = 'qwertyuiop'"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 18:00:13 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1539/15000"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "88f3f1936f25eee9be4667dce0ba1621"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "88f3f1936f25eee9be4667dce0ba1621"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"totalSize\": 1,\n    \"done\": true,\n    \"records\": [\n        {\n            \"attributes\": {\n                \"type\": \"Account\",\n                \"url\": \"/services/data/v64.0/sobjects/Account/001gL00001777l0QAA\"\n            },\n            \"Id\": \"001gL00001777l0QAA\",\n            \"Name\": \"Maxtech\",\n            \"Phone\": \"00001111\",\n            \"ExternalId__c\": \"qwertyuiop\",\n            \"Contacts\": {\n                \"totalSize\": 1,\n                \"done\": true,\n                \"records\": [\n                    {\n                        \"attributes\": {\n                            \"type\": \"Contact\",\n                            \"url\": \"/services/data/v64.0/sobjects/Contact/003gL00000h56f9QAA\"\n                        },\n                        \"Id\": \"003gL00000h56f9QAA\",\n                        \"Name\": \"Wilson\"\n                    }\n                ]\n            }\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Update - Account",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"Name\": \"Ultratech\",\n    \"Phone\": \"098765678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "sobjects",
+                "Account",
+                "ExternalId__c",
+                ":EXTERNAL_ID"
+              ],
+              "variable": [
+                {
+                  "key": "EXTERNAL_ID",
+                  "value": "qwertyuiop"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"Name\": \"Ultratech\",\n    \"Phone\": \"098765678\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "sobjects",
+                    "Account",
+                    "ExternalId__c",
+                    ":EXTERNAL_ID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "EXTERNAL_ID",
+                      "value": "qwertyuiop"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 18:32:55 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "location",
+                  "value": "/services/data/v64.0/sobjects/Account/001gL00001777l0QAA"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1576/15000"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "eefb0e68df99d6bdf8c313cf345c21b4"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "eefb0e68df99d6bdf8c313cf345c21b4"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"id\": \"001gL00001777l0QAA\",\n    \"success\": true,\n    \"errors\": [],\n    \"created\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Request Delete - Account",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "sobjects",
+                "Account",
+                "ExternalId__c",
+                ":EXTERNAL_ID"
+              ],
+              "variable": [
+                {
+                  "key": "EXTERNAL_ID",
+                  "value": "67890893y234123jrt67yu"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/sobjects/Account/ExternalId__c/:EXTERNAL_ID",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "sobjects",
+                    "Account",
+                    "ExternalId__c",
+                    ":EXTERNAL_ID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "EXTERNAL_ID",
+                      "value": "67890893y234123jrt67yu"
+                    }
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 204
+                },
+                {
+                  "key": "date",
+                  "value": "Fri, 24 Apr 2026 18:41:09 GMT"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "content-security-policy",
+                  "value": "upgrade-insecure-requests"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=1590/15000"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "03cf99bab8af9230f609219e2c2bb4b9"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "03cf99bab8af9230f609219e2c2bb4b9"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "myDomain",
+      "value": ""
+    },
+    {
+      "key": "client_id",
+      "value": ""
+    },
+    {
+      "key": "client_secret",
+      "value": ""
+    },
+    {
+      "key": "url",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "securityToken",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "endpoint",
+      "value": ""
+    }
+  ]
+}
