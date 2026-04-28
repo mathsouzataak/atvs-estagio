@@ -1602,6 +1602,387 @@
               "body": "{\n    \"compositeResponse\": [\n        {\n            \"body\": {\n                \"id\": \"801gL00001GcvA3QAJ\",\n                \"success\": true,\n                \"errors\": [],\n                \"created\": false\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Order/801gL00001GcvA3QAJ\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"updatedOrder1\"\n        },\n        {\n            \"body\": {\n                \"id\": \"801gL00001GdGklQAF\",\n                \"success\": true,\n                \"errors\": [],\n                \"created\": false\n            },\n            \"httpHeaders\": {\n                \"Location\": \"/services/data/v64.0/sobjects/Order/801gL00001GdGklQAF\"\n            },\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"updatedOrder2\"\n        }\n    ]\n}"
             }
           ]
+        },
+        {
+          "name": "Request Update - OrderItem",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"allOrNone\": false,\n    \"records\": [\n        {\n            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"updatedOrderItem\"},\n            \"ExternalId__c\": \"384ufih3efqwef2\",\n            \"UnitPrice\": 6,\n            \"Quantity\": 10\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects/OrderItem/ExternalId__c",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                "sobjects",
+                "OrderItem",
+                "ExternalId__c"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": false,\n    \"records\": [\n        {\n            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"updatedOrderItem\"},\n            \"ExternalId__c\": \"384ufih3efqwef2\",\n            \"UnitPrice\": 6,\n            \"Quantity\": 10\n        }\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects/OrderItem/ExternalId__c",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    "sobjects",
+                    "OrderItem",
+                    "ExternalId__c"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Tue, 28 Apr 2026 12:19:26 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=71/15000"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "fc686a3597fce3c33f34a3c2e7f86749"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "fc686a3597fce3c33f34a3c2e7f86749"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"802gL00000NdbLsQAJ\",\n        \"success\": true,\n        \"errors\": [],\n        \"created\": false\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Request Delete - Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": []
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects?ids=801gL00001GcnCVQAZ,801gL00001GdG82QAF,801gL00001GcnUEQAZ&allOrNone=false",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                "sobjects"
+              ],
+              "query": [
+                {
+                  "key": "ids",
+                  "value": "801gL00001GcnCVQAZ,801gL00001GdG82QAF,801gL00001GcnUEQAZ",
+                  "type": "text"
+                },
+                {
+                  "key": "allOrNone",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": false,\n    \"records\": [\n        {\n            \"attributes\": {\"type\": \"OrderItem\", \"referenceId\": \"updatedOrderItem\"},\n            \"ExternalId__c\": \"384ufih3efqwef2\",\n            \"UnitPrice\": 6,\n            \"Quantity\": 10\n        }\n    ]\n}"
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/sobjects?ids=801gL00001GcnCVQAZ,801gL00001GdG82QAF,801gL00001GcnUEQAZ&allOrNone=false",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    "sobjects"
+                  ],
+                  "query": [
+                    {
+                      "key": "ids",
+                      "value": "801gL00001GcnCVQAZ,801gL00001GdG82QAF,801gL00001GcnUEQAZ"
+                    },
+                    {
+                      "key": "allOrNone",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Tue, 28 Apr 2026 12:31:16 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=121/15000"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "9952e620bc6aee448024ed058507e520"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "9952e620bc6aee448024ed058507e520"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"801gL00001GcnCVQAZ\",\n        \"success\": true,\n        \"errors\": []\n    },\n    {\n        \"id\": \"801gL00001GdG82QAF\",\n        \"success\": true,\n        \"errors\": []\n    },\n    {\n        \"id\": \"801gL00001GcnUEQAZ\",\n        \"success\": false,\n        \"errors\": [\n            {\n                \"statusCode\": \"ENTITY_IS_DELETED\",\n                \"message\": \"entity is deleted\",\n                \"fields\": []\n            }\n        ]\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Request Delete - Order & OrderItems",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"DELETE\",\n            \"url\": \"/services/data/v64.0/composite/sobjects?ids=801gL00001GdGklQAF,801gL00001GdQ7OQAV&allOrNone=true\",\n            \"referenceId\": \"deletedOrderAndItems1\"\n        },\n        {\n            \"method\": \"DELETE\",\n            \"url\": \"/services/data/v64.0/composite/sobjects?ids=801gL00001GfCTKQA3,802gL00000Nd2PkQAJ,802gL00000Nd2PlQAJ&allOrNone=true\",\n            \"referenceId\": \"deletedOrderAndItems2\"\n        }\n\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{endpoint}}/services/data/v64.0/composite/",
+              "host": [
+                "{{endpoint}}"
+              ],
+              "path": [
+                "services",
+                "data",
+                "v64.0",
+                "composite",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [\n        {\n            \"method\": \"DELETE\",\n            \"url\": \"/services/data/v64.0/composite/sobjects?ids=801gL00001GdGklQAF,801gL00001GdQ7OQAV&allOrNone=true\",\n            \"referenceId\": \"deletedOrderAndItems1\"\n        },\n        {\n            \"method\": \"DELETE\",\n            \"url\": \"/services/data/v64.0/composite/sobjects?ids=801gL00001GfCTKQA3,802gL00000Nd2PkQAJ,802gL00000Nd2PlQAJ&allOrNone=true\",\n            \"referenceId\": \"deletedOrderAndItems2\"\n        }\n\n    ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{endpoint}}/services/data/v64.0/composite/",
+                  "host": [
+                    "{{endpoint}}"
+                  ],
+                  "path": [
+                    "services",
+                    "data",
+                    "v64.0",
+                    "composite",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": ":status",
+                  "value": 200
+                },
+                {
+                  "key": "date",
+                  "value": "Tue, 28 Apr 2026 13:14:48 GMT"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "cache-control",
+                  "value": "no-cache,must-revalidate,max-age=0,no-store,private"
+                },
+                {
+                  "key": "x-content-type-options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "x-robots-tag",
+                  "value": "none"
+                },
+                {
+                  "key": "sforce-limit-info",
+                  "value": "api-usage=186/15000"
+                },
+                {
+                  "key": "content-encoding",
+                  "value": "gzip"
+                },
+                {
+                  "key": "strict-transport-security",
+                  "value": "max-age=63072000; includeSubDomains"
+                },
+                {
+                  "key": "server",
+                  "value": "sfdcedge"
+                },
+                {
+                  "key": "x-sfdc-request-id",
+                  "value": "e1f9fdfc907ef9f108ad93ee7b334eab"
+                },
+                {
+                  "key": "x-request-id",
+                  "value": "e1f9fdfc907ef9f108ad93ee7b334eab"
+                },
+                {
+                  "key": "x-sfdc-edge-cache",
+                  "value": "none"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"compositeResponse\": [\n        {\n            \"body\": [\n                {\n                    \"id\": \"801gL00001GdGklQAF\",\n                    \"success\": true,\n                    \"errors\": []\n                },\n                {\n                    \"id\": \"801gL00001GdQ7OQAV\",\n                    \"success\": true,\n                    \"errors\": []\n                }\n            ],\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"deletedOrderAndItems1\"\n        },\n        {\n            \"body\": [\n                {\n                    \"id\": \"801gL00001GfCTKQA3\",\n                    \"success\": true,\n                    \"errors\": []\n                },\n                {\n                    \"id\": \"802gL00000Nd2PkQAJ\",\n                    \"success\": true,\n                    \"errors\": []\n                },\n                {\n                    \"id\": \"802gL00000Nd2PlQAJ\",\n                    \"success\": true,\n                    \"errors\": []\n                }\n            ],\n            \"httpHeaders\": {},\n            \"httpStatusCode\": 200,\n            \"referenceId\": \"deletedOrderAndItems2\"\n        }\n    ]\n}"
+            }
+          ]
         }
       ]
     }
