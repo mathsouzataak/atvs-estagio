@@ -5,6 +5,7 @@
     <columns>Codigo__c</columns>
     <columns>CustoProducao__c</columns>
     <columns>HierarquiaProduto__c</columns>
+    <columns>ExternalId__c</columns>
     <filterScope>Everything</filterScope>
     <label>All Products</label>
 </ListView>
