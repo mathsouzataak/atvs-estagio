@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Codigo__c</fullName>
+    <fullName>ExternalId__c</fullName>
     <caseSensitive>false</caseSensitive>
-    <description>Código do município segundo o IBGE</description>
     <externalId>true</externalId>
-    <label>Código</label>
-    <length>7</length>
-    <required>true</required>
-    <trackTrending>false</trackTrending>
+    <label>ExternalId</label>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
     <type>Text</type>
     <unique>true</unique>
 </CustomField>

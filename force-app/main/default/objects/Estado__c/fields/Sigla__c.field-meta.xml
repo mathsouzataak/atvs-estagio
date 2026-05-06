@@ -3,7 +3,7 @@
     <fullName>Sigla__c</fullName>
     <caseSensitive>false</caseSensitive>
     <description>Sigla do estado ou UF</description>
-    <externalId>false</externalId>
+    <externalId>true</externalId>
     <label>Sigla</label>
     <length>2</length>
     <required>true</required>

@@ -3,7 +3,7 @@
     <fullName>Code__c</fullName>
     <caseSensitive>false</caseSensitive>
     <description>Código de cadastro do centro de distribuição</description>
-    <externalId>false</externalId>
+    <externalId>true</externalId>
     <label>Code</label>
     <length>30</length>
     <required>true</required>

@@ -7,7 +7,8 @@ public with sharing class TemplateDefaultFields {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
                 'Name' => 'Conta ' + countSObjectCreated,
-                'CNPJ__c' => String.valueOf(countSObjectCreated).leftPad(14,'0')
+                'CNPJ__c' => String.valueOf(countSObjectCreated).leftPad(14,'0'),
+                'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
     }
@@ -26,7 +27,8 @@ public with sharing class TemplateDefaultFields {
             return new Map<String, Object>{
                 'Name' => 'Produto ' + countSObjectCreated,
                 'Codigo__c' => String.valueOf(countSObjectCreated).leftPad(50,'X'),
-                'IsActive' => true
+                'IsActive' => true,
+                'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
     }
@@ -109,7 +111,8 @@ public with sharing class TemplateDefaultFields {
                 'EffectiveDate' => Date.today(),
                 'DataEntrega__c' => Date.today().addDays(Integer.valueOf(countSObjectCreated)),
                 'TipoFrete__c' => 'CIF',
-                'Status' => 'Draft'
+                'Status' => 'Draft',
+                'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
     }
@@ -129,10 +132,21 @@ public with sharing class TemplateDefaultFields {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
                 'Name' => 'Test pricebook',
-                'IsActive' => true
+                'IsActive' => true,
+                'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
     }
+
+
+	public class PricebookEntryDefaults implements FieldDefaults {
+		public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
+			return new Map<String, Object>{
+				'UnitPrice' => 100,
+				'ExternalId__c' => 'PricebookEntry' + countSObjectCreated
+			};
+		}
+	}
 
     public class CondicaoPagamentoDefaults implements FieldDefaults {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
@@ -147,7 +161,8 @@ public with sharing class TemplateDefaultFields {
         public Map<String, Object> getFieldDefaults(Decimal countSObjectCreated) {
             return new Map<String, Object>{
                 'UnitPrice' => countSObjectCreated * 100,
-                'Quantity' => Integer.valueOf(countSObjectCreated)
+                'Quantity' => Integer.valueOf(countSObjectCreated),
+                'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
     }

@@ -3,7 +3,7 @@
     <fullName>Sigla__c</fullName>
     <caseSensitive>false</caseSensitive>
     <description>Sigla do país</description>
-    <externalId>false</externalId>
+    <externalId>true</externalId>
     <label>Sigla</label>
     <length>6</length>
     <required>true</required>
