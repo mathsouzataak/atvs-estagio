@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExternalClientApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>matheus.souza@taak.com.br</contactEmail>
+    <distributionState>Local</distributionState>
+    <isProtected>false</isProtected>
+    <label>Pricing Integration App</label>
+    <orgScopedExternalApp>00Dg7000001lwnd:Pricing_Integration_App</orgScopedExternalApp>
+</ExternalClientApplication>

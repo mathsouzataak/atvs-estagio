@@ -1,6 +1,6 @@
 public with sharing class IntegrationOutboundOrder {
     
-    public String postOrder(Id orderId) {
+    public static String postOrder(Id orderId) {
 
         Order order = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
                             DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
@@ -8,6 +8,12 @@ public with sharing class IntegrationOutboundOrder {
                         FROM Order
                         WHERE Id = :orderId
                         LIMIT 1];
+
+        System.debug('Order: ' + order?.toString());
+
+        if (order == null) {
+            return null;
+        }
 
         Map<String, Object> orderJson = new Map<String, Object>{
             'externalId' => order.ExternalId__c,
@@ -45,19 +51,21 @@ public with sharing class IntegrationOutboundOrder {
             'orderRequest' => orderJson
         };
 
+        System.debug('Request Body: ');
+        System.debug(JSON.serialize(requestBody));
+
         Http http = new Http();
         HttpRequest request = new HttpRequest();
         request.setEndpoint('callout:ExternalOrg/services/apexrest/upsertOneOrder');
         request.setMethod('POST');
         request.setBody(JSON.serialize(requestBody));
 
-
         HttpResponse response = http.send(request);
 
         return response.getBody();
     }
 
-    public String postOrders(Set<Id> orderIds) {
+    public static String postOrders(Set<Id> orderIds) {
 
         List<Map<String, Object>> orderJsonList = new List<Map<String, Object>>();
         for (Order order : [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
@@ -65,6 +73,8 @@ public with sharing class IntegrationOutboundOrder {
                                 (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
                             FROM Order
                             WHERE Id IN :orderIds]) {
+
+            System.debug('Order: ' + order?.toString());
 
             Map<String, Object> orderJson = new Map<String,Object>{
                 'externalId' => order.ExternalId__c,
@@ -102,10 +112,16 @@ public with sharing class IntegrationOutboundOrder {
             
         }
 
+        if (orderJsonList.isEmpty()) {
+            return null;
+        }
+
         Map<String, Object> requestBody = new Map<String,Object>{
             'orderRequestList' => orderJsonList
         };
 
+        System.debug('Request Body: ');
+        System.debug(JSON.serialize(requestBody));
 
         Http http = new Http();
         HttpRequest request = new HttpRequest();

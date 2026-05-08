@@ -3,7 +3,6 @@
     <fullName>HasDeleted__c</fullName>
     <defaultValue>false</defaultValue>
     <description>Marcado como true se houve exclusão de item nesta chamada de integração</description>
-    <externalId>false</externalId>
     <inlineHelpText>Marcado como true se houve exclusão de item nesta chamada de integração</inlineHelpText>
     <label>Tem exclusão?</label>
     <trackHistory>false</trackHistory>

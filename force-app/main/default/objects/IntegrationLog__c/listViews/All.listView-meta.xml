@@ -3,7 +3,7 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>IntegrationName__c</columns>
-    <columns>Attachment__c</columns>
+    <columns>Endpoint__c</columns>
     <columns>Status__c</columns>
     <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>

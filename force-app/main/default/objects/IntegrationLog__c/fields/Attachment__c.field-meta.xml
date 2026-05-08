@@ -3,7 +3,6 @@
     <fullName>Attachment__c</fullName>
     <defaultValue>false</defaultValue>
     <description>Log possui anexo?</description>
-    <externalId>false</externalId>
     <inlineHelpText>Log possui anexo?</inlineHelpText>
     <label>Possui Anexo?</label>
     <trackHistory>false</trackHistory>
