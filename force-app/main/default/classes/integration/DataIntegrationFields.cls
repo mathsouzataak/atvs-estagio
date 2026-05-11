@@ -166,4 +166,133 @@ global with sharing class DataIntegrationFields {
 	global class ResponseParent extends Response {
 		public List<DataIntegrationFields.Response> items;
 	}
+
+	// INTEGRATION OUTBOUND
+	// Standard Http Request response
+	public class RequestResponseObject {
+		// Response object, in case the callout was successful.
+		public HttpResponse response;
+		// Boolean that determines if there is an exception or a HttpResponse.
+		public Boolean success;
+		// Exception object, in case there is any.
+		public Exception exceptionObject;
+
+		public RequestResponseObject(HttpResponse response) {
+			this.success = true;
+			this.response = response;
+			this.exceptionObject = null;
+		}
+
+		public RequestResponseObject(Exception ex) {
+			this.success = false;
+			this.response = null;
+			this.exceptionObject = ex;
+		}
+	}
+
+	// CALLOUT STANDARD RESPONSE OUTTER CLASS
+	public class CalloutResponse {
+		public Boolean hasError;
+		public String errorMessage;
+
+		public ResponseParametersWrapper parsedResponse;
+		public List<ResponseParametersWrapper> parsedResponses;
+
+		public CalloutResponse(String errorMessage) {
+			this.hasError = true;
+			this.errorMessage = errorMessage;
+		}
+		public CalloutResponse(ResponseParametersWrapper response, Boolean hasError) {
+			this.hasError = hasError;
+			this.errorMessage = '';
+			this.parsedResponse = response;
+		}
+		public CalloutResponse(List<ResponseParametersWrapper> responseList, Boolean hasError) {
+			this.hasError = hasError;
+			this.errorMessage = '';
+			this.parsedResponses = responseList;
+		}
+	}
+
+	public class ResponseParametersWrapper { // Adaptar Esta Class Para os Campos que Virá de Resposta da Integração OUT
+		public Boolean hasError;
+		public String errorMessage;
+		public String salesforceId;
+		public String externalId;
+		public String sobjectType;
+
+		public List<ResponseParametersWrapper> items;
+	}
+
+	public class RequestList { // Alterar o Nome das Variaveis Se Necessário
+		List<OrderParameters> orderRequestList;
+
+		public RequestList(List<DataIntegrationFields.OrderParameters> orderRequestList) {
+			this.orderRequestList = orderRequestList;
+		}
+	}
+	public class Request { // Alterar o Nome das Variaveis Se Necessário
+		OrderParameters orderRequest;
+
+		public Request(DataIntegrationFields.OrderParameters orderRequest) {
+			this.orderRequest = orderRequest;
+		}
+	}
+
+	public class OrderParameters {
+		public String externalId;
+		public String status;
+		public Date effectiveDate;
+		public String accountExternalId;
+		public String pricebook2ExternalId;
+		public String addressCode;
+		public String distCenterCode;
+		public String paymentConditionCode;
+		public Date deliveryDate;
+		public String observation;
+		public String freightType;
+
+		public OrderItemParameters[] orderItemList;
+
+		public OrderParameters(Order order) {
+			this.externalId = order.ExternalId__c;
+			this.status = order.Status;
+			this.effectiveDate = order.EffectiveDate;
+			this.accountExternalId = order.Account.ExternalId__c;
+			this.pricebook2ExternalId = order.Pricebook2.ExternalId__c;
+			this.addressCode = order.AccountAddress__r.Code__c;
+			this.distCenterCode = order.CentroDistribuicao__r.Code__c;
+			this.paymentConditionCode = order.CondicaoPagamento__r.Codigo__c;
+			this.deliveryDate = order.DataEntrega__c;
+			this.observation = order.Observacao__c;
+			this.freightType = order.TipoFrete__c;
+
+			this.orderItemList = new List<OrderItemParameters>();
+
+			for (OrderItem orderItem : order.OrderItems) {
+				orderItemList.add(new OrderItemParameters(orderItem));
+			}
+		}
+	}
+	public class OrderItemParameters {
+		public String externalId;
+		public Decimal quantity;
+		public Decimal unitPrice;
+		public String orderExternalId;
+		public String productExternalId;
+		public String pricebookEntryExternalId;
+
+		public OrderItemParameters(OrderItem orderItem) {
+			this.externalId = orderItem.ExternalId__c;
+			this.quantity = orderItem.Quantity;
+			this.unitPrice = orderItem.UnitPrice;
+			//this.orderExternalId = orderItem.Order?.ExternalId__c;
+			this.productExternalId = orderItem.Product2.ExternalId__c;
+			this.pricebookEntryExternalId = orderItem.PricebookEntry.ExternalId__c;
+		}
+	}
+
+	public class ResponseAccessToken {
+		public String access_token;
+	}
 }

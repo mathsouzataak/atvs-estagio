@@ -1,7 +1,6 @@
 public with sharing class IntegrationOutboundOrder {
-    
-    public static String postOrder(Id orderId) {
 
+    public static String postOrder(Id orderId) {
         Order order = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
                             DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
                             (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
@@ -9,47 +8,16 @@ public with sharing class IntegrationOutboundOrder {
                         WHERE Id = :orderId
                         LIMIT 1];
 
+        return postOrder(order);
+    }
+    
+    public static String postOrder(Order order) {
+
         System.debug('Order: ' + order?.toString());
 
-        if (order == null) {
-            return null;
-        }
-
-        Map<String, Object> orderJson = new Map<String, Object>{
-            'externalId' => order.ExternalId__c,
-            'status' => order.Status,
-            'effectiveDate' => order.EffectiveDate,
-            'accountExternalId' => order.Account.ExternalId__c,
-            'pricebook2ExternalId' => order.Pricebook2.ExternalId__c,
-            'addressCode' => order.AccountAddress__r.Code__c,
-            'distCenterCode' => order.CentroDistribuicao__r.Code__c,
-            'paymentConditionCode' => order.CondicaoPagamento__r.Codigo__c,
-            'deliveryDate' => order.DataEntrega__c,
-            'observation' => order.Observacao__c,
-            'freightType' => order.TipoFrete__c
-        };
-
-        if (!order.OrderItems.isEmpty()) {
-            List<Map<String,Object>> orderItemsJson = new List<Map<String,Object>>();
-
-            for (OrderItem orderItem : order.OrderItems) {
-                orderItemsJson.add(
-                    new Map<String, Object>{
-                        'externalId' => orderItem.ExternalId__c,
-                        'quantity' => orderItem.Quantity,
-                        'unitPrice' => orderItem.UnitPrice,
-                        'productExternalId' => orderItem.Product2.ExternalId__c,
-                        'pricebookEntryExternalId' => orderItem.PricebookEntry.ExternalId__c
-                    }
-                );
-            }
-
-            orderJson.put('orderItemList', orderItemsJson);
-        }
-
-        Map<String, Object> requestBody = new Map<String, Object>{
-            'orderRequest' => orderJson
-        };
+        DataIntegrationFields.Request requestBody = new DataIntegrationFields.Request(
+            new DataIntegrationFields.OrderParameters(order)
+        );
 
         System.debug('Request Body: ');
         System.debug(JSON.serialize(requestBody));
@@ -67,65 +35,36 @@ public with sharing class IntegrationOutboundOrder {
 
     public static String postOrders(Set<Id> orderIds) {
 
-        List<Map<String, Object>> orderJsonList = new List<Map<String, Object>>();
-        for (Order order : [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
-                                DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
-                                (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
-                            FROM Order
-                            WHERE Id IN :orderIds]) {
+        if (orderIds.isEmpty()) {
 
-            System.debug('Order: ' + order?.toString());
-
-            Map<String, Object> orderJson = new Map<String,Object>{
-                'externalId' => order.ExternalId__c,
-                'status' => order.Status,
-                'effectiveDate' => order.EffectiveDate,
-                'accountExternalId' => order.Account.ExternalId__c,
-                'pricebook2ExternalId' => order.Pricebook2.ExternalId__c,
-                'addressCode' => order.AccountAddress__r.Code__c,
-                'distCenterCode' => order.CentroDistribuicao__r.Code__c,
-                'paymentConditionCode' => order.CondicaoPagamento__r.Codigo__c,
-                'deliveryDate' => order.DataEntrega__c,
-                'observation' => order.Observacao__c,
-                'freightType' => order.TipoFrete__c
-            };
-
-            if (!order.OrderItems.isEmpty()) {
-                List<Map<String,Object>> orderItemsJson = new List<Map<String,Object>>();
-
-                for (OrderItem orderItem : order.OrderItems) {
-                    orderItemsJson.add(
-                        new Map<String, Object>{
-                            'externalId' => orderItem.ExternalId__c,
-                            'quantity' => orderItem.Quantity,
-                            'unitPrice' => orderItem.UnitPrice,
-                            'productExternalId' => orderItem.Product2.ExternalId__c,
-                            'pricebookEntryExternalId' => orderItem.PricebookEntry.ExternalId__c
-                        }
-                    );
-                }
-
-                orderJson.put('orderItemList', orderItemsJson);
-            }
-            
-            orderJsonList.add(orderJson);
-            
         }
 
-        if (orderJsonList.isEmpty()) {
-            return null;
+        List<Order> orders = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
+                                    DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
+                                    (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
+                                FROM Order
+                                WHERE Id IN :orderIds];
+
+        return postOrders(orders);
+    }
+
+    public static String postOrders(List<Order> orders) {
+
+        List<DataIntegrationFields.OrderParameters> orderParametersList = new List<DataIntegrationFields.OrderParameters>();
+        for (Order order : orders) {
+            orderParametersList.add(new DataIntegrationFields.OrderParameters(order));
         }
 
-        Map<String, Object> requestBody = new Map<String,Object>{
-            'orderRequestList' => orderJsonList
-        };
+        DataIntegrationFields.RequestList requestBody = new DataIntegrationFields.RequestList(
+            orderParametersList
+        );
 
         System.debug('Request Body: ');
         System.debug(JSON.serialize(requestBody));
 
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:ExternalOrg/services/apexrest/upsertOneOrder');
+        request.setEndpoint('callout:ExternalOrg/services/apexrest/upsertOrder');
         request.setMethod('POST');
         request.setBody(JSON.serialize(requestBody));
 
