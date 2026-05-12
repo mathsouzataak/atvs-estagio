@@ -20,9 +20,12 @@ public with sharing class FactoryDataIntegrationTest {
 		DistributionCenter__c distCenter = TestDataFactory.createDistCenter(true);
 
 		Order newOrder = (Order)sobjectFactory.createSObject(
-			new Order(AccountId = newAccount.Id, Pricebook2Id = Test.getStandardPricebookId(), ExternalId__c = 'Class Test', AccountAddress__c = address.Id, CondicaoPagamento__c = paymentCondition.Id, CentroDistribuicao__c = distCenter.Id)
+			new Order(AccountId = newAccount.Id, AccountAddress__c = address.Id, Pricebook2Id = Test.getStandardPricebookId(), ExternalId__c = 'CalloutOrder', CondicaoPagamento__c = paymentCondition.Id, CentroDistribuicao__c = distCenter.Id)
 		);
-		insert newOrder;
+		Order newOrderError = (Order)sobjectFactory.createSObject(
+			new Order(AccountId = newAccount.Id, AccountAddress__c = address.Id, Pricebook2Id = Test.getStandardPricebookId(), ExternalId__c = 'CalloutOrderError', CondicaoPagamento__c = paymentCondition.Id, CentroDistribuicao__c = distCenter.Id)
+		);
+		insert (new List<Order>{ newOrder, newOrderError });
 
 		TriggerHandler.bypass('OrderItemTriggerHandler');
 		TriggerHandler.bypass('OrderTriggerHandler');
@@ -32,9 +35,9 @@ public with sharing class FactoryDataIntegrationTest {
 		);
 		insert newOrderItem;
 
+
 		TriggerHandler.clearBypass('OrderTriggerHandler');
 		TriggerHandler.clearBypass('OrderItemTriggerHandler');
-
 	}
 
 	@IsTest
@@ -44,7 +47,14 @@ public with sharing class FactoryDataIntegrationTest {
 		List<Order> orderToUpsertList = new List<Order>();
 
 		Test.startTest();
-			FactoryDataIntegration.convertSObject(new Order(), 'IN', orderRequestList, responseList, orderToUpsertList);
+			FactoryDataIntegration.convertSObject(
+				new Order(),
+				'IN',
+				orderRequestList,
+				responseList,
+				orderToUpsertList,
+				new List<String>{ orderRequestList[0].externalId }
+			);
 		Test.stopTest();
 	}
 

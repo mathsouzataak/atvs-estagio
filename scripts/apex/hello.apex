@@ -10,6 +10,8 @@ List<Order> orders = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAd
 orders[0].Observacao__c = 'VERBUM CARO FACTUM EST';
 orders[1].Observacao__c = 'ET HABITAVUNT IN NOBIS';
 
-String response = IntegrationOutboundOrder.postOrders(orders);
+//String response = IntegrationOutboundOrder.postOrders(orders);
 
-System.debug('Response: ' + response);
+DataIntegrationFields.CalloutResponse response = CalloutOrder.executeCalloutOrder(new List<String>{orders[0].Id, orders[1].Id});
+
+System.debug('Response: ' + response?.toString());

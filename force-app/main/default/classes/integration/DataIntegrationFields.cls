@@ -1,4 +1,9 @@
 global with sharing class DataIntegrationFields {
+
+	// ========================================================================
+	// INBOUND INTEGRATION
+	// ========================================================================
+
 	public interface FieldData {
 		List<String> getRequiredFields();
 		String getFieldKey();
@@ -146,6 +151,7 @@ global with sharing class DataIntegrationFields {
 			this.externalId		= externalId;
 			this.sobjectType	= sobjectType;
 			this.hasError		= false;
+			this.errorMessage	= '';
 		}
 
 		public void error(String externalId, String errorMessage, String sobjectType){
@@ -167,8 +173,11 @@ global with sharing class DataIntegrationFields {
 		public List<DataIntegrationFields.Response> items;
 	}
 
-	// INTEGRATION OUTBOUND
-	// Standard Http Request response
+
+	// ========================================================================
+	// OUTBOUND INTEGRATION
+	// ========================================================================
+
 	public class RequestResponseObject {
 		// Response object, in case the callout was successful.
 		public HttpResponse response;
@@ -294,5 +303,7 @@ global with sharing class DataIntegrationFields {
 
 	public class ResponseAccessToken {
 		public String access_token;
+		public String error;
+		public String error_description;
 	}
 }

@@ -56,7 +56,7 @@ public with sharing class IntegrationInboundOneOrderTest {
 		System.debug('orderRequest => ' + orderRequest);
 
 		Test.startTest();
-			IntegrationInboundOneOrder.upsertOrder(orderRequest);
+			IntegrationInboundOneOrder.doPost(orderRequest);
 		Test.stopTest();
 	}
 
