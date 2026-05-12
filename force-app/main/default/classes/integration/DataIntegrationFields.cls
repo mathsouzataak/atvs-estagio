@@ -249,17 +249,29 @@ global with sharing class DataIntegrationFields {
 	}
 
 	public class OrderParameters {
+
+		// public String externalId;
+		// public String status;
+		// public Date effectiveDate;
+		// public String accountExternalId;
+		// public String pricebook2ExternalId;
+		// public String addressCode;
+		// public String distCenterCode;
+		// public String paymentConditionCode;
+		// public Date deliveryDate;
+		// public String observation;
+		// public String freightType;
+
 		public String externalId;
 		public String status;
 		public Date effectiveDate;
 		public String accountExternalId;
 		public String pricebook2ExternalId;
-		public String addressCode;
-		public String distCenterCode;
-		public String paymentConditionCode;
+		public String accountAddressExternalId;
+		public String distributionCenterExternalId;
+		public String paymentTermExternalId;
 		public Date deliveryDate;
-		public String observation;
-		public String freightType;
+		public String shippingType;
 
 		public OrderItemParameters[] orderItemList;
 
@@ -269,12 +281,11 @@ global with sharing class DataIntegrationFields {
 			this.effectiveDate = order.EffectiveDate;
 			this.accountExternalId = order.Account.ExternalId__c;
 			this.pricebook2ExternalId = order.Pricebook2.ExternalId__c;
-			this.addressCode = order.AccountAddress__r.Code__c;
-			this.distCenterCode = order.CentroDistribuicao__r.Code__c;
-			this.paymentConditionCode = order.CondicaoPagamento__r.Codigo__c;
+			this.accountAddressExternalId = order.AccountAddress__r.Code__c;
+			this.distributionCenterExternalId = order.CentroDistribuicao__r.Code__c;
+			this.paymentTermExternalId = order.CondicaoPagamento__r.Codigo__c;
 			this.deliveryDate = order.DataEntrega__c;
-			this.observation = order.Observacao__c;
-			this.freightType = order.TipoFrete__c;
+			this.shippingType = order.TipoFrete__c;
 
 			this.orderItemList = new List<OrderItemParameters>();
 
