@@ -1,3 +1,3 @@
-trigger OrderTrigger on Order (before insert, before update, after update, after insert) {
+trigger OrderTrigger on Order (before insert, before update) {
     new OrderTriggerHandler().run();
 }

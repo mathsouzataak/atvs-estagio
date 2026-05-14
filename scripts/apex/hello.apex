@@ -4,11 +4,8 @@ Order order = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__
                     DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
                     (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
                 FROM Order
-                WHERE Id = '801g700000JFAQjAAP'
+                WHERE Id = '801g700000IvGwvAAF'
                 LIMIT 1];
-
-System.debug(order);
-System.debug(order.OrderItems);
 
 //String response = IntegrationOutboundOrder.postOrders(orders);
 

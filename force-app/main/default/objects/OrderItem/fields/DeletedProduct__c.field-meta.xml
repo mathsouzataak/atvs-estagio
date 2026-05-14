@@ -3,6 +3,7 @@
     <fullName>DeletedProduct__c</fullName>
     <defaultValue>false</defaultValue>
     <description>O produto foi deletado pela TOTVS?</description>
+    <externalId>false</externalId>
     <inlineHelpText>O produto foi deletado pela TOTVS?</inlineHelpText>
     <label>Produto Deletado?</label>
     <trackHistory>false</trackHistory>

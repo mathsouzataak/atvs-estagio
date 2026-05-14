@@ -57,10 +57,7 @@ public with sharing class CalloutOrder {
 				updateIntegrationSetting(integrationSetting);
 			}
 
-			// DO NOT REMOVE the bypass unless you want infinite recursive callouts
-			TriggerHandler.bypass('OrderTriggerHandler');
 			updateSObjectWithIntegrationLogId(sendOrderList, integrationLogId, 'OUT');
-			TriggerHandler.clearBypass('OrderTriggerHandler');
 		}
 		catch (Exception ex) {
 			System.debug('Exception Integration Log => ' + ex.getMessage() + ' - ' + ex.getStackTraceString());
@@ -68,7 +65,6 @@ public with sharing class CalloutOrder {
 
 		return calloutResponse;
 	}
-
 
 	public static List<Order> getOrders(List<String> orderIdList) {
 		return [
