@@ -3,7 +3,7 @@
     <fullName>IntegratedIn__c</fullName>
     <defaultValue>false</defaultValue>
     <description>O pedido é originado de um sistema externo.</description>
-    <label>Pedido de integração</label>
+    <label>Originado de integração</label>
     <trackHistory>false</trackHistory>
     <type>Checkbox</type>
 </CustomField>

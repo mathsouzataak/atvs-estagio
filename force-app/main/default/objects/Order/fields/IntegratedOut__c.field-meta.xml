@@ -3,7 +3,7 @@
     <fullName>IntegratedOut__c</fullName>
     <defaultValue>false</defaultValue>
     <description>O pedido está integrado a um sistema externo</description>
-    <label>Pedido integrado</label>
+    <label>Enviado para integração</label>
     <trackHistory>false</trackHistory>
     <type>Checkbox</type>
 </CustomField>

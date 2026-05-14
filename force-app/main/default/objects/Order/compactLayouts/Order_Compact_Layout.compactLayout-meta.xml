@@ -6,5 +6,6 @@
     <fields>AccountAddress__c</fields>
     <fields>CentroDistribuicao__c</fields>
     <fields>TotalAmount</fields>
+    <fields>ExternalId__c</fields>
     <label>Order Compact Layout</label>
 </CompactLayout>

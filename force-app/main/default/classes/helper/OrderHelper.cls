@@ -89,7 +89,6 @@ public with sharing class OrderHelper {
         }
     }
 
-
     public static List<Order> queryOrdersWithIds(Set<Id> ids) {
         return [SELECT Id, 
                 AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, 

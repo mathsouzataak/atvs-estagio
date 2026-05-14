@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Integrated__c</fullName>
-    <defaultValue>false</defaultValue>
-    <description>O pedido é originado de um sistema externo.</description>
-    <label>Pedido de integração</label>
-    <trackHistory>false</trackHistory>
-    <type>Checkbox</type>
-</CustomField>
