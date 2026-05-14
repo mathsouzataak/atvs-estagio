@@ -25,6 +25,10 @@ global with sharing class IntegrationInboundOrder {
 				new Order(), 'IN', orderRequestList, orderResponseList, orderToUpsertList, orderExternalIdList
 			);
 
+			for (Order order : orderToUpsertList) {
+				order.IntegratedIn__c = true;
+			}
+
 			IntegrationUtils.upsertRecords(
 				Database.upsert(orderToUpsertList, Order.Fields.ExternalId__c, false), orderResponseList, orderToUpsertList, Order.Fields.ExternalId__c
 			);

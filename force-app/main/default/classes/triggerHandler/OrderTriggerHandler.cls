@@ -5,6 +5,7 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
         List<Order> oldOrders = (List<Order>)Trigger.old;
 
         Map<Id,Order> newOrdersWithUpdatedAddrOrDistCenter = new Map<Id,Order>();
+        Map<Id,Order> orderForIntegration = new Map<Id,Order>();
         for (Integer i = 0; i < newOrders.size(); i++) {
             // Pedido estava ativo
             if (oldOrders[i].Status == 'Activated') {
@@ -30,6 +31,30 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
 
         OrderHelper.assignParametersToItemsOnUpdateOrder(newOrdersWithUpdatedAddrOrDistCenter);
 
+    }
+
+    public override void afterUpdate() {
+        List<String> orderIdListForIntegration = new List<String>();
+
+        for (Order order : (List<Order>)Trigger.new) {
+            if (order.IntegratedOut__c) {
+                orderIdListForIntegration.add(order.Id);
+            }
+        }
+
+        System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+    }
+
+    public override void afterInsert() {
+        List<String> orderIdListForIntegration = new List<String>();
+        for (Order order : (List<Order>)Trigger.new) {
+            if (order.IntegratedOut__c) {
+                orderIdListForIntegration.add(order.Id);
+            }
+        }
+
+
+        System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
     }
     
 }
