@@ -10,7 +10,7 @@
     <externalAuthIdentityProviderParameters>
         <parameterName>TokenUrl</parameterName>
         <parameterType>TokenUrl</parameterType>
-        <parameterValue>https://creative-goat-kweav4-dev-ed.trailblaze.my.salesforce.com/services/oauth2/token</parameterValue>
+        <parameterValue>https://wise-unicorn-rqjjpa-dev-ed.trailblaze.my.salesforce.com/services/oauth2/token</parameterValue>
     </externalAuthIdentityProviderParameters>
     <label>External Org Client Credential Flow</label>
 </ExternalAuthIdentityProvider>
