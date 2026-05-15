@@ -63,6 +63,17 @@ global with sharing class IntegrationInboundOrder {
 				hasAnyError,
 				hasDeleted
 			);
+
+			List<OrderLogAssociation__c> ordersLogList = new List<OrderLogAssociation__c>();
+			for (Order iOrder : orderToUpsertList) {
+				if (String.isBlank(iOrder.Id)) {
+					continue;
+				}
+
+				ordersLogList.add(new OrderLogAssociation__c(Order__c = iOrder.Id, IntegrationLog__c = integrationLogId));
+			}
+
+			Database.insert(ordersLogList);
 		}
 		catch (Exception ex) {
 			System.debug('Do Post Exception => ' + ex.getMessage() + ' - ' + ex.getStackTraceString());
@@ -72,7 +83,9 @@ global with sharing class IntegrationInboundOrder {
 		}
 
 		if (!String.isBlank(integrationLogId)) {
+			TriggerHandler.bypass('OrderTriggerHandler');
 			updateOrderWithIntegrationLogId(orderToUpsertList, integrationLogId, 'IN');
+			TriggerHandler.clearBypass('OrderTriggerHandler');
 		}
 	}
 
