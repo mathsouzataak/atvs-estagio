@@ -106,42 +106,6 @@ public with sharing class CalloutOrderTest {
 	}
 
 	@IsTest
-	public static void handlerAccessTokenTest() {
-		Test.startTest();
-			Test.setMock(
-				HttpCalloutMock.class,
-				new MockHttpResponse(true, TestUtility.getBodyAccessToken(), TestUtility.getBodyAccessToken())
-			);
-
-			CalloutOrder.handlerAccessToken(new CalloutOrder.AccessTokenLog());
-		Test.stopTest();
-	}
-
-	@IsTest
-	public static void getAccessTokenTest() {
-		IntegrationSetting__c integrationSetting = getIntegrationSetting();
-		integrationSetting.LastAccessTokenTime__c = null;
-		update integrationSetting;
-
-		Test.startTest();
-			Test.setMock(
-				HttpCalloutMock.class,
-				new MockHttpResponse(true, TestUtility.getBodyAccessToken(), TestUtility.getBodyAccessToken())
-			);
-			CalloutOrder.handlerAccessToken(new CalloutOrder.AccessTokenLog());
-
-			Test.setMock(
-				HttpCalloutMock.class,
-				new MockHttpResponse(false, TestUtility.getBodyAccessToken(), TestUtility.getBodyAccessToken())
-			);
-			try {
-				CalloutOrder.handlerAccessToken(new CalloutOrder.AccessTokenLog());
-			}
-			catch (Exception ex) {}
-		Test.stopTest();
-	}
-
-	@IsTest
 	public static void treatmentMethodsTest() {
 		CalloutOrder.callErrorTreatment();
 		CalloutOrder.callSuccessTreatment();

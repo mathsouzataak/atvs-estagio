@@ -1,14 +1,6 @@
-Set<String> ids = new Set<String>{'qwerty32535432789', 'qwerty3243566'};
+List<Order> orders = new List<Order>{
+    new Order(Id = '801g700000Jt7sLAAR', IntegratedOut__c = true),
+    new Order(Id = '801g700000JsncSAAR', IntegratedOut__c = true)
+};
 
-Order order = [SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
-                    DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
-                    (SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems)
-                FROM Order
-                WHERE Id = '801g700000IvGwvAAF'
-                LIMIT 1];
-
-//String response = IntegrationOutboundOrder.postOrders(orders);
-
-DataIntegrationFields.CalloutResponse response = CalloutOrder.executeCalloutOrder(new List<String>{order.Id});
-
-System.debug('Response: ' + response?.toString());
+update orders;

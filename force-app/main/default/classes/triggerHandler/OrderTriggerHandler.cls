@@ -42,7 +42,9 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             }
         }
 
-        System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        if (!orderIdListForIntegration.isEmpty()){
+            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        }
     }
 
     public override void afterInsert() {
@@ -53,8 +55,9 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             }
         }
 
-
-        System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        if (!orderIdListForIntegration.isEmpty()){
+            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        }
     }
     
 }

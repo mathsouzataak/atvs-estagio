@@ -1,18 +1,20 @@
 public with sharing class CalloutOrder {
+	/**
+	 * Execute a callout to upsert orders
+	 * @param orderIdList List of Order Ids to be sent in the callout
+	 * @return DataIntegrationFields.CalloutResponse Response to the callout
+	 */
 	public static DataIntegrationFields.CalloutResponse executeCalloutOrder(List<String> orderIdList) {
 		if (orderIdList.isEmpty()) return new DataIntegrationFields.CalloutResponse('Lista de Order Id Vazia!');
 
 		List<Order> sendOrderList;
 		DataIntegrationFields.CalloutResponse calloutResponse;
-		AccessTokenLog accessTokenLog = new AccessTokenLog();
 		IntegrationSettings integrationSetting;
 		HttpResponse response;
 		String payload;
 		try {
-			//integrationSetting = handlerAccessToken(accessTokenLog);
 			integrationSetting = new IntegrationSettings(IntegrationSetting__c.getValues('ExternalOrgPostOrder'));
 
-			Map<String, String> headersMap = fillHeader(integrationSetting);
 			sendOrderList = getOrders(orderIdList);
 			payload = JSON.serialize(new DataIntegrationFields.RequestList( fillOrderRequestList(sendOrderList) ));
 
@@ -49,10 +51,6 @@ public with sharing class CalloutOrder {
 				false
 			);
 
-			if (!String.isBlank(accessTokenLog.response)) {
-				createTokenLog(accessTokenLog.response, accessTokenLog.payload, accessTokenLog.endpoint, 200, '');
-			}
-
 			if (integrationSetting.hasUpdateAccessToken) {
 				updateIntegrationSetting(integrationSetting);
 			}
@@ -70,89 +68,26 @@ public with sharing class CalloutOrder {
 	}
 
 
+	/**
+	 * Query the Orders from a list of ids
+	 * @param orderIdList List of order ids
+	 * @return List<Order> List of retrieved orders
+	 */
 	public static List<Order> getOrders(List<String> orderIdList) {
 		return [
 			SELECT Id, ExternalId__c, Account.ExternalId__c, AccountAddress__r.Code__c, CentroDistribuicao__r.Code__c, 
 				DataEntrega__c, Observacao__c, EffectiveDate, Pricebook2.ExternalId__c, Status, TipoFrete__c, CondicaoPagamento__r.Codigo__c, 
-				(SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c FROM OrderItems WHERE DeletedProduct__c = false)
+				(SELECT Id, ExternalId__c, Quantity, UnitPrice, Product2.ExternalId__c, PricebookEntry.ExternalId__c, Order.ExternalId__c FROM OrderItems WHERE DeletedProduct__c = false)
 			FROM Order
 			WHERE Id IN :orderIdList
 		];
 	}
 
-	public static IntegrationSettings handlerAccessToken(AccessTokenLog accessTokenLog) {
-		IntegrationSettings integrationSetting = new IntegrationSettings(IntegrationSetting__c.getValues('ExternalOrgPostOrder'));
-		Decimal lastTime = integrationSetting.lastAccessTokenTime;
-
-		if (lastTime != null && datetime.now().getTime() < (lastTime + integrationSetting.accessTokenTime)) {
-			return integrationSetting;
-		}
-
-		return getAccessToken(integrationSetting, accessTokenLog);
-	}
-
-	public static IntegrationSettings getAccessToken(IntegrationSettings integrationSetting, AccessTokenLog accessTokenLog) {
-		String body = '' +
-			'grant_type=password&client_id=' + integrationSetting.clientId +
-			'&client_secret=' + integrationSetting.clientSecret +
-			'&username=' + integrationSetting.user +
-			'&password=' + integrationSetting.password;
-		String endpoint = integrationSetting.endpointAccessToken + '?' + body;
-
-		HttpRequest request = new HttpRequest();
-		request.setMethod('POST');
-		request.setTimeout(Integer.valueOf(integrationSetting.timeout));
-		request.setEndpoint(endpoint);
-
-		HttpResponse response = (new Http()).send(request);
-		DataIntegrationFields.ResponseAccessToken responseAccessToken = (DataIntegrationFields.ResponseAccessToken)JSON.deserialize(
-			response.getBody(), DataIntegrationFields.ResponseAccessToken.class
-		);
-
-		if (response.getStatusCode() != 200 && response.getStatusCode() != 201) {
-			String errorMessage = ''		 +
-				'Get Access Token Error => ' +
-				response.getStatusCode()	 + ' | ' +
-				response.getStatus()		 + ' | ' +
-				responseAccessToken.error	 + ' | ' +
-				responseAccessToken.error_description;
-
-			createTokenLog(response.getBody(), '', endpoint, response.getStatusCode(), errorMessage);
-
-			throw new CustomException(errorMessage);
-		}
-
-		integrationSetting.changeAccessTokenTime(datetime.now().getTime(), responseAccessToken.access_token);
-		accessTokenLog.response = response.getBody();
-		accessTokenLog.payload = endpoint;
-		accessTokenLog.endpoint = integrationSetting.endpointAccessToken;
-		accessTokenLog.statusCode = 200;
-
-		return integrationSetting;
-	}
-
-	public static void createTokenLog(String response, String payload, String endpoint, Integer statusCode, String errorMessage) {
-		IntegrationLog.createLog(
-			'Order Access Token',
-			new List<String>(),
-			'Outbound',
-			response,
-			payload,
-			errorMessage,
-			endpoint,
-			statusCode,
-			(statusCode != 200),
-			false
-		);
-	}
-
-	public static Map<String, String> fillHeader(IntegrationSettings integrationSetting) {
-		return new Map<String, String>{
-			'Content-Type' => 'application/json',
-			'Authorization' => 'Bearer ' + integrationSetting.accessToken
-		};
-	}
-
+	/**
+	 * Generates a list of order parameters for the request payload from a list of orders
+	 * @param orderList List of Orders to compose the request
+	 * @return List<DataIntegrationFields.OrderParameters> List of order parameters
+	 */
 	public static List<DataIntegrationFields.OrderParameters> fillOrderRequestList(List<Order> orderList) {
 		List<DataIntegrationFields.OrderParameters> orderRequestList = new List<DataIntegrationFields.OrderParameters>();
 
@@ -163,6 +98,11 @@ public with sharing class CalloutOrder {
 		return orderRequestList;
 	}
 
+	/**
+	 * Get a callout response object from a HttpResponse
+	 * @param response HttpResponse from a callout
+	 * @return DataIntegrationFields.CalloutResponse Callout response
+	 */
 	public static DataIntegrationFields.CalloutResponse fillCalloutResponse(HttpResponse response) {
 		try {
 			if (response.getStatusCode() != 200 && response.getStatusCode() != 201) {

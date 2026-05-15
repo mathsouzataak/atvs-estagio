@@ -306,7 +306,7 @@ global with sharing class DataIntegrationFields {
 			this.externalId = orderItem.ExternalId__c;
 			this.quantity = orderItem.Quantity;
 			this.unitPrice = orderItem.UnitPrice;
-			//this.orderExternalId = orderItem.Order?.ExternalId__c;
+			this.orderExternalId = orderItem.Order.ExternalId__c;
 			this.productExternalId = orderItem.Product2.ExternalId__c;
 			this.pricebookEntryExternalId = orderItem.PricebookEntry.ExternalId__c;
 		}

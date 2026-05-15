@@ -33,7 +33,7 @@ global with sharing class IntegrationInboundOrder {
 				Database.upsert(orderToUpsertList, Order.Fields.ExternalId__c, false), orderResponseList, orderToUpsertList, Order.Fields.ExternalId__c
 			);
 
-			Boolean hasDeleted = deletedOrderItem(orderItemToUpsertList, false);
+			Boolean hasDeleted = deletedOrderItem(orderItemToUpsertList, orderExternalIdList, false);
 
 			if (!orderItemToUpsertList.isEmpty()) {
 				upsertOrderItem(orderItemToUpsertList, orderExternalIdToOrderItem, orderItemResponseList);
@@ -114,22 +114,24 @@ global with sharing class IntegrationInboundOrder {
 		);
 	}
 
-	public static Boolean deletedOrderItem(List<DataIntegrationFields.OrderItemINData> orderItemRequestList, Boolean willDeleted) {
+	public static Boolean deletedOrderItem(List<DataIntegrationFields.OrderItemINData> orderItemRequestList, List<String> orderExternalIdList, Boolean willDeleted) {
 		List<OrderItem> deleteOrderItemList = new List<OrderItem>();
 		List<OrderItem> updateOrderItemList = new List<OrderItem>();
 		Set<String> orderItemExternalIdSet = new Set<String>();
-		Set<String> orderExternalIdSet = new Set<String>();
+
+		System.debug(orderItemExternalIdSet);
+		System.debug(orderExternalIdList);
+
 
 		for (DataIntegrationFields.OrderItemINData orderItemData : orderItemRequestList) {
 			orderItemExternalIdSet.add(orderItemData.externalId);
-			orderExternalIdSet.add(orderItemData.orderExternalId);
 		}
 
 		for (OrderItem orderItem : [
 			SELECT Id, DeletedProduct__c
 			  FROM OrderItem
 			 WHERE ExternalId__c NOT IN: orderItemExternalIdSet
-			   AND Order.ExternalId__c IN: orderExternalIdSet
+			   AND Order.ExternalId__c IN: orderExternalIdList
 			   AND DeletedProduct__c = false
 		]) {
 			if (willDeleted) deleteOrderItemList.add(orderItem);
