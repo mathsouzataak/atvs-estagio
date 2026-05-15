@@ -51,16 +51,7 @@ public with sharing class CalloutOrder {
 				false
 			);
 
-			List<OrderLogAssociation__c> ordersLogList = new List<OrderLogAssociation__c>();
-			for (Order iOrder : sendOrderList) {
-				if (String.isBlank(iOrder.Id)) {
-					continue;
-				}
-
-				ordersLogList.add(new OrderLogAssociation__c(Order__c = iOrder.Id, IntegrationLog__c = integrationLogId));
-			}
-
-			Database.insert(ordersLogList);
+			IntegrationLog.createOrderLogAssociation(sendOrderList, integrationLogId);
 
 			// DO NOT REMOVE the bypass unless you want infinite recursive callouts
 			TriggerHandler.bypass('OrderTriggerHandler');

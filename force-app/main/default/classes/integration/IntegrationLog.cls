@@ -89,6 +89,19 @@ public with sharing class IntegrationLog {
 		);
 	}
 
+	public static void createOrderLogAssociation(List<Order> orderList, String integrationLogId) {
+		List<OrderLogAssociation__c> ordersLogList = new List<OrderLogAssociation__c>();
+		for (Order iOrder : orderList) {
+			if (String.isBlank(iOrder.Id)) {
+				continue;
+			}
+
+			ordersLogList.add(new OrderLogAssociation__c(Order__c = iOrder.Id, IntegrationLog__c = integrationLogId));
+		}
+
+		Database.insert(ordersLogList);
+	}
+
 	@TestVisible
 	private static Id createAttachment(
 		String recordId,
