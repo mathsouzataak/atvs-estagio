@@ -41,7 +41,7 @@ global with sharing class DataIntegrationFields {
 			return new Order(
 				Id						= this.id,
 				ExternalId__c			= this.externalId,
-				Status					= this.status,
+				Status					= 'External', //this.status,
 				EffectiveDate			= this.effectiveDate,
 				Pricebook2				= new Pricebook2(ExternalId__c = this.pricebook2ExternalId),
 				Account					= new Account(ExternalId__c = this.accountExternalId),
