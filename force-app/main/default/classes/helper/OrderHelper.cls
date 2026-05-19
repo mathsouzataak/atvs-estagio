@@ -89,6 +89,17 @@ public with sharing class OrderHelper {
         }
     }
 
+    public static void validateApprovalSubmission(Map<Id,Order> orderMap) {
+
+        for (Order iOrder : [SELECT Id, (SELECT Id FROM OrderItems) 
+                                FROM Order 
+                                WHERE Id IN :orderMap.keySet()]) {
+            if (iOrder.OrderItems.isEmpty()) {
+                orderMap.get(iOrder.Id).addError('O pedido deve ter pelo menos um item para ser submetido a aprovação.');
+            }
+        }
+    }
+
     public static List<Order> queryOrdersWithIds(Set<Id> ids) {
         return [SELECT Id, 
                 AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, 

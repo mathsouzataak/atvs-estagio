@@ -4,10 +4,8 @@
     <columns>ORDERS.ORDER_NUMBER</columns>
     <columns>SALES.ACCOUNT.NAME</columns>
     <columns>ORDERS.TOTAL_AMOUNT</columns>
-    <columns>ORDERS.EFFECTIVE_DATE</columns>
     <columns>ORDERS.STATUS</columns>
-    <columns>CONTRACT.CONTRACT_NUMBER</columns>
-    <columns>PRICEBOOK2.NAME</columns>
+    <columns>ExternalId__c</columns>
     <filterScope>Everything</filterScope>
     <label>All Orders</label>
 </ListView>

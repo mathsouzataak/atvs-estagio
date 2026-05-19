@@ -50,7 +50,8 @@ global with sharing class DataIntegrationFields {
 				CondicaoPagamento__r 	= new CondicaoPagamento__c(Codigo__c = this.paymentConditionCode),
 				DataEntrega__c			= this.deliveryDate,
 				Observacao__c			= this.observation,
-				TipoFrete__c			= this.freightType
+				TipoFrete__c			= this.freightType,
+				IntegratedIn__c 		= true
 			);
 		}
 

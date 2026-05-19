@@ -1,11 +1,21 @@
 public with sharing class OrderTriggerHandler extends TriggerHandler {
 
+    public override void beforeInsert() {
+
+        for (Order iNewOrder : (List<Order>)Trigger.new) {
+            if (!iNewOrder.IntegratedIn__c) {
+                iNewOrder.Status = 'New';
+            }
+        }
+
+    }
+
     public override void beforeUpdate() {
         List<Order> newOrders = (List<Order>)Trigger.new;
         List<Order> oldOrders = (List<Order>)Trigger.old;
 
         Map<Id,Order> newOrdersWithUpdatedAddrOrDistCenter = new Map<Id,Order>();
-        Map<Id,Order> orderForIntegration = new Map<Id,Order>();
+        Map<Id,Order> ordersSubmittedToApproval = new Map<Id,Order>();
         for (Integer i = 0; i < newOrders.size(); i++) {
             // Pedido estava ativo
             if (oldOrders[i].Status == 'Activated') {
@@ -19,6 +29,9 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 continue;
             }
 
+            if (newOrders[i].Status == 'InApproval' && oldOrders[i].Status == 'New') {
+                ordersSubmittedToApproval.put(newOrders[i].Id, newOrders[i]);
+            }
 
             // Centro dist. ou endereço alterados - necessário atualizar parâmetros dos itens
             if (!newOrders[i].hasErrors() &&
@@ -29,6 +42,7 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             }
         }
 
+        OrderHelper.validateApprovalSubmission(ordersSubmittedToApproval);
         OrderHelper.assignParametersToItemsOnUpdateOrder(newOrdersWithUpdatedAddrOrDistCenter);
 
     }
@@ -36,15 +50,25 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
     public override void afterUpdate() {
         List<String> orderIdListForIntegration = new List<String>();
 
-        for (Order order : (List<Order>)Trigger.new) {
-            if (order.IntegratedOut__c) {
-                orderIdListForIntegration.add(order.Id);
+        List<Order> ordersToApprove = new List<Order>();
+
+        for (Order iOrder : (List<Order>)Trigger.new) {
+            if (iOrder.IntegratedOut__c) {
+                orderIdListForIntegration.add(iOrder.Id);
+            }
+
+            if (iOrder.Status == 'InApproval' && iOrder.TotalDiscount__c > 20) {
+                Order order = iOrder.clone(true);
+                order.Status = 'Approved';
+                ordersToApprove.add(order);
             }
         }
 
-        if (!orderIdListForIntegration.isEmpty()){
-            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
-        }
+        Database.update(ordersToApprove);
+
+        // if (!orderIdListForIntegration.isEmpty()){
+        //     System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        // }
     }
 
     public override void afterInsert() {
@@ -55,9 +79,9 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
             }
         }
 
-        if (!orderIdListForIntegration.isEmpty()){
-            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
-        }
+        // if (!orderIdListForIntegration.isEmpty()){
+        //     System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        // }
     }
     
 }
