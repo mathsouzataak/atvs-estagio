@@ -57,11 +57,15 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 orderIdListForIntegration.add(iOrder.Id);
             }
 
-            // if (iOrder.Status == 'InApproval' && iOrder.TotalDiscount__c < 20) {
-            //     Order order = iOrder.clone(true);
-            //     order.Status = 'Approved';
-            //     ordersToApprove.add(order);
-            // }
+            if (iOrder.Status == 'InApproval') {
+                Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest();
+                request.setComments('Solicitação de aprovação automática.');
+                request.setObjectId(iOrder.Id);
+                request.setProcessDefinitionNameOrId('OrderApproval');
+
+                Approval.process(request);
+
+            }
         }
 
         Database.update(ordersToApprove);
