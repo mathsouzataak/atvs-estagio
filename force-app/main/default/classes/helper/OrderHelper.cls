@@ -100,6 +100,24 @@ public with sharing class OrderHelper {
         }
     }
 
+    public static void updateIntegrationStatus(Set<Id> orderIds) {
+
+        List<Order> ordersForUpdate = new List<Order>();
+
+        for (Order iOrder : [SELECT Id, Status, IntegrationLogOutbound__r.Status__c FROM Order WHERE Id IN :orderIds]) {
+            if (iOrder.IntegrationLogOutbound__r.Status__c == 'Error') {
+                iOrder.Status = 'IntegrationError';
+            } else {
+                iOrder.Status = 'Integrated';
+            }
+
+            ordersForUpdate.add(iOrder);
+        }
+
+        Database.update(ordersForUpdate);
+
+    }
+
     public static List<Order> queryOrdersWithIds(Set<Id> ids) {
         return [SELECT Id, 
                 AccountAddress__r.Cidade__c, AccountAddress__r.Cidade__r.Id, AccountAddress__r.Cidade__r.Estado__c, AccountAddress__r.Cidade__r.Estado__r.Pais__c, 

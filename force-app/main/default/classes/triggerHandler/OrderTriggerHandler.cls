@@ -23,6 +23,16 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 continue;
             }
 
+            if (oldOrders[i].Status == 'External' && newOrders[i].Status != 'External') {
+                newOrders[i].addError('Não é possível alterar o status de um pedido externo.');
+                continue;
+            }
+
+            if (oldOrders[i].Status == 'New' && newOrders[i].Status != oldOrders[i].Status && newOrders[i].Status != 'InApproval') {
+                newOrders[i].addError('Um pedido novo só pode ter seu status mudado para "em aprovação".');
+                continue;
+            }
+
             // Conta do Pedido alterada
             if (newOrders[i].AccountId != oldOrders[i].AccountId) {
                 newOrders[i].addError('A conta do pedido não pode ser alterada.');
@@ -48,31 +58,39 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
     }
 
     public override void afterUpdate() {
-        List<String> orderIdListForIntegration = new List<String>();
+        List<Order> newOrders = (List<Order>)Trigger.new;
+        List<Order> oldOrders = (List<Order>)Trigger.old;
 
+        List<String> orderIdListForIntegration = new List<String>();
+        Set<Id> orderIdsForUpdateIntegrationStatus = new Set<Id>();
         List<Order> ordersToApprove = new List<Order>();
 
-        for (Order iOrder : (List<Order>)Trigger.new) {
-            if (iOrder.IntegratedOut__c) {
-                orderIdListForIntegration.add(iOrder.Id);
-            }
-
-            if (iOrder.Status == 'InApproval') {
+        for (Integer i = 0; i < newOrders.size(); i++) {
+            if (newOrders[i].Status == 'InApproval') {
                 Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest();
                 request.setComments('Solicitação de aprovação automática.');
-                request.setObjectId(iOrder.Id);
+                request.setObjectId(newOrders[i].Id);
                 request.setProcessDefinitionNameOrId('OrderApproval');
 
                 Approval.process(request);
+            }
 
+            if (newOrders[i].Status == 'Approved' && oldOrders[i].Status == 'InApproval') {
+                orderIdListForIntegration.add(newOrders[i].Id);
+            }
+
+            if (newOrders[i].IntegrationLogOutbound__c != oldOrders[i].IntegrationLogOutbound__c) {
+                orderIdsForUpdateIntegrationStatus.add(newOrders[i].Id);
             }
         }
 
         Database.update(ordersToApprove);
 
-        // if (!orderIdListForIntegration.isEmpty()){
-        //     System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
-        // }
+        if (!orderIdListForIntegration.isEmpty()){
+            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
+        }
+
+        OrderHelper.updateIntegrationStatus(orderIdsForUpdateIntegrationStatus);
     }
 
     public override void afterInsert() {
