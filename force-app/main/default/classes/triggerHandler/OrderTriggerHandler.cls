@@ -75,7 +75,7 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 Approval.process(request);
             }
 
-            if (newOrders[i].Status == 'Approved' && oldOrders[i].Status == 'InApproval') {
+            if (newOrders[i].Status == 'Approved' && oldOrders[i].Status != newOrders[i].Status) {
                 orderIdListForIntegration.add(newOrders[i].Id);
             }
 
