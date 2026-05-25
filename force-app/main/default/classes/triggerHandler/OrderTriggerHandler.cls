@@ -61,49 +61,18 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
         List<Order> newOrders = (List<Order>)Trigger.new;
         List<Order> oldOrders = (List<Order>)Trigger.old;
 
-        List<String> orderIdListForIntegration = new List<String>();
         Set<Id> orderIdsForUpdateIntegrationStatus = new Set<Id>();
-        List<Order> ordersToApprove = new List<Order>();
 
         for (Integer i = 0; i < newOrders.size(); i++) {
-            if (newOrders[i].Status == 'InApproval') {
-                Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest();
-                request.setComments('Solicitação de aprovação automática.');
-                request.setObjectId(newOrders[i].Id);
-                request.setProcessDefinitionNameOrId('OrderApproval');
-
-                Approval.process(request);
-            }
-
-            if (newOrders[i].Status == 'Approved' && oldOrders[i].Status != newOrders[i].Status) {
-                orderIdListForIntegration.add(newOrders[i].Id);
-            }
-
             if (newOrders[i].IntegrationLogOutbound__c != oldOrders[i].IntegrationLogOutbound__c) {
                 orderIdsForUpdateIntegrationStatus.add(newOrders[i].Id);
             }
-        }
-
-        Database.update(ordersToApprove);
-
-        if (!orderIdListForIntegration.isEmpty()){
-            System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
         }
 
         OrderHelper.updateIntegrationStatus(orderIdsForUpdateIntegrationStatus);
     }
 
     public override void afterInsert() {
-        List<String> orderIdListForIntegration = new List<String>();
-        for (Order order : (List<Order>)Trigger.new) {
-            if (order.IntegratedOut__c) {
-                orderIdListForIntegration.add(order.Id);
-            }
-        }
-
-        // if (!orderIdListForIntegration.isEmpty()){
-        //     System.enqueueJob(new AsyncCalloutOrder(orderIdListForIntegration));
-        // }
     }
     
 }

@@ -59,6 +59,8 @@ public with sharing class CalloutOrder {
 			System.debug('Exception Integration Log => ' + ex.getMessage() + ' - ' + ex.getStackTraceString());
 		}
 
+		System.debug(calloutResponse);
+
 		return calloutResponse;
 	}
 
@@ -238,4 +240,12 @@ public with sharing class CalloutOrder {
 			this.accessToken = accessToken;
 		}
 	}
+
+	@InvocableMethod(label='Order Callout' category='Order')
+	public static List<Boolean> invocableExecuteCalloutOrder(List<String> orderIdList) {
+		System.debug('Execução do Invocable');
+		
+		return new List<Boolean>{executeCalloutOrder(orderIdList).hasError};
+	}
+
 }
