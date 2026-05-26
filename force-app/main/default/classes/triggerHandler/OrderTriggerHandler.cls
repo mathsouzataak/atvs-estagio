@@ -67,7 +67,19 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
 
         Set<Id> orderIdsForUpdateIntegrationStatus = new Set<Id>();
 
+        Boolean isOrderApprovalFlowActive = FlowHelper.isFlowActive('OrderApprovalFlowTrigger');
+
         for (Integer i = 0; i < newOrders.size(); i++) {
+
+            if (newOrders[i].Status == 'InApproval' && !isOrderApprovalFlowActive) {
+                Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest();
+                request.setComments('Solicitação de aprovação automática.');
+                request.setObjectId(newOrders[i].Id);
+                request.setProcessDefinitionNameOrId('OrderApproval');
+
+                Approval.process(request);
+            }
+
             if (newOrders[i].IntegrationLogOutbound__c != oldOrders[i].IntegrationLogOutbound__c) {
                 orderIdsForUpdateIntegrationStatus.add(newOrders[i].Id);
             }
