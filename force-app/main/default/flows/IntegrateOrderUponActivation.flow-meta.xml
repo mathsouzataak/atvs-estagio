@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>Make_Callout</name>
-        <label>Make Callout</label>
+        <name>Copy_1_of_Copy_1_of_Make_Callout</name>
+        <label>Copy 1 of Copy 1 of Make Callout</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <actionName>CalloutOrder</actionName>
         <actionType>apex</actionType>
-        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <flowTransactionModel>Automatic</flowTransactionModel>
         <inputParameters>
             <name>orderIdList</name>
             <value>
@@ -16,6 +16,7 @@
         </inputParameters>
         <nameSegment>CalloutOrder</nameSegment>
         <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
@@ -44,7 +45,9 @@
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <connector>
+            <targetReference>Copy_1_of_Copy_1_of_Make_Callout</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Status</field>
@@ -55,12 +58,6 @@
         </filters>
         <object>Order</object>
         <recordTriggerType>Update</recordTriggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Make_Callout</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>

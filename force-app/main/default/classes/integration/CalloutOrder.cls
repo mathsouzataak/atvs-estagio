@@ -242,10 +242,12 @@ public with sharing class CalloutOrder {
 	}
 
 	@InvocableMethod(label='Order Callout' category='Order')
-	public static List<Boolean> invocableExecuteCalloutOrder(List<String> orderIdList) {
+	public static void invocableExecuteCalloutOrder(List<String> orderIdList) {
 		System.debug('Execução do Invocable');
-		
-		return new List<Boolean>{executeCalloutOrder(orderIdList).hasError};
+
+		AsyncCalloutOrder callout = new AsyncCalloutOrder(orderIdList);
+		System.enqueueJob(callout);
+
 	}
 
 }

@@ -16,10 +16,6 @@
         </inputParameters>
         <nameSegment>CalloutOrder</nameSegment>
         <offset>0</offset>
-        <outputParameters>
-            <assignToReference>hasError</assignToReference>
-            <name>output</name>
-        </outputParameters>
     </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

@@ -23,14 +23,18 @@ public with sharing class OrderTriggerHandler extends TriggerHandler {
                 continue;
             }
 
-            if (oldOrders[i].Status == 'External' && newOrders[i].Status != 'External') {
-                newOrders[i].addError('Não é possível alterar o status de um pedido externo.');
+            if (oldOrders[i].Status == 'External') {
+                newOrders[i].addError('Não é possível alterar um pedido externo.');
                 continue;
             }
 
             if (oldOrders[i].Status == 'New' && newOrders[i].Status != oldOrders[i].Status && newOrders[i].Status != 'InApproval') {
                 newOrders[i].addError('Um pedido novo só pode ter seu status mudado para "em aprovação".');
                 continue;
+            }
+
+            if (newOrders[i].Status == 'InApproval' && newOrders[i].Status != oldOrders[i].Status && oldOrders[i].Status != 'New') {
+                newOrders[i].addError('Um pedido só pode entrar em processo de aprovação se for novo.');
             }
 
             // Conta do Pedido alterada
