@@ -111,7 +111,7 @@ public with sharing class TemplateDefaultFields {
                 'EffectiveDate' => Date.today(),
                 'DataEntrega__c' => Date.today().addDays(Integer.valueOf(countSObjectCreated)),
                 'TipoFrete__c' => 'CIF',
-                'Status' => 'Draft',
+                'Status' => 'New',
                 'ExternalId__c' => 'teste' + countSObjectCreated
             };
         }
