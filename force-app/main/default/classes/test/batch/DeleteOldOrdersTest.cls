@@ -32,4 +32,18 @@ private class DeleteOldOrdersTest {
         Assert.areEqual(0, [SELECT COUNT() FROM Order WHERE CreatedDate < :(Datetime.now().addMonths(-5))]);
         Assert.areEqual(45, [SELECT COUNT() FROM Order]);
     }
+
+    @isTest
+    static void testScheduledDeleteOldOrders() {
+        Test.startTest();
+        String cronExpression = '0 0 0 15 3 ? 2042';
+        Id jobId = System.schedule('deleteOldOrdersTest', cronExpression, new ScheduledDeleteOldOrder());
+        Test.stopTest();
+
+        CronTrigger ct = [SELECT Id, CronExpression, State 
+                            FROM CronTrigger 
+                            WHERE Id = :jobId];
+        Assert.areEqual(cronExpression, ct.CronExpression);
+        Assert.areEqual('WAITING', ct.State);
+    }
 }
