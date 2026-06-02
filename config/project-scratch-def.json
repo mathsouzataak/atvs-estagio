@@ -1,6 +1,7 @@
 {
-  "orgName": "grupotaak company",
+  "orgName": "Pricing",
   "edition": "Developer",
+  "language": "en_US",
   "features": ["EnableSetPasswordInApi"],
   "settings": {
     "lightningExperienceSettings": {
@@ -8,6 +9,9 @@
     },
     "mobileSettings": {
       "enableS1EncryptedStoragePref2": false
+    },
+    "UIBundleSettings": { 
+      "webAppOptIn": true 
     }
   }
 }
