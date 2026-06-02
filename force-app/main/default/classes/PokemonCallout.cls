@@ -12,26 +12,28 @@ public with sharing class PokemonCallout implements Queueable, Database.AllowsCa
 
     public void execute(QueueableContext context) {
 
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint(endpoint);
-        request.setMethod('GET');
-        request.setHeader('Accept', 'application/json');
-
-        Http http = new Http();
-        HttpResponse response = http.send(request);
-
-        Map<String, Object> responseJsonBody = (Map<String,Object>) JSON.deserializeUntyped(response.getBody());
-        String newEndpoint = (String) responseJsonBody.get('next');
-        List<Object> pokemonList = (List<Object>) responseJsonBody.get('results');
-
         List<Pokemon__c> pokemonsForInsert = new List<Pokemon__c>();
+        String newEndpoint = endpoint;
 
-        for (Object pokemonJson : (List<Object>) pokemonList) {
-            Map<String,Object> pokemonMap = (Map<String,Object>) pokemonJson;
-            pokemonsForInsert.add(new Pokemon__c(Name = (String) pokemonMap.get('name'), Url__c = (String) pokemonMap.get('url')));
+        for (Integer i = 0; i < 20; i++) {
+            if (String.isBlank(newEndpoint)) {
+                break;
+            }
+
+            Map<String, Object> responseJsonBody = PokemonService.getPokemons(newEndpoint);
+
+            newEndpoint = (String) responseJsonBody.get('next');
+            List<Object> pokemonList = (List<Object>) responseJsonBody.get('results');
+
+            for (Object pokemonJson : (List<Object>) pokemonList) {
+                Map<String,Object> pokemonMap = (Map<String,Object>) pokemonJson;
+                pokemonsForInsert.add(new Pokemon__c(Name = (String) pokemonMap.get('name'), Url__c = (String) pokemonMap.get('url')));
+            }
         }
 
-        Database.insert(pokemonsForInsert);
+
+
+        Database.insert(pokemonsForInsert, false);
 
         if (!String.isBlank(newEndpoint)) {
             PokemonCallout nextCallout = new PokemonCallout(newEndpoint);
