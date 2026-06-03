@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Condition_Must_Be_Specified</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( 
+  RecordType.Name = &apos;PaymentCondition&apos;, 
+  ISBLANK( PaymentCondition__c )
+)</errorConditionFormula>
+    <errorDisplayField>PaymentCondition__c</errorDisplayField>
+    <errorMessage>Meta de condição de pagamento deve ser especificada</errorMessage>
+</ValidationRule>

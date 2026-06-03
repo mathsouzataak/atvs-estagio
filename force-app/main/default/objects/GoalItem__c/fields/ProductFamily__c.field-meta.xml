@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ProductFamily__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Família de Produto</label>
+    <referenceTo>ProductFamily__c</referenceTo>
+    <relationshipLabel>Itens da Meta</relationshipLabel>
+    <relationshipName>GoalItems</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

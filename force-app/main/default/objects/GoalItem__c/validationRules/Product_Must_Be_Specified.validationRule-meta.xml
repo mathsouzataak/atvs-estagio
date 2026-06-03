@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_Must_Be_Specified</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( 
+  RecordType.Name = &apos;Product&apos;, 
+  ISBLANK( Product__c )
+)</errorConditionFormula>
+    <errorDisplayField>Product__c</errorDisplayField>
+    <errorMessage>Meta de produto deve ter um produto especificado.</errorMessage>
+</ValidationRule>

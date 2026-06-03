@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parameters_Must_Not_Be_Specified</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  RecordType.Name = &apos;Performance&apos;,
+  OR(
+    NOT(ISBLANK( Product__c )),
+    NOT(ISBLANK( ProductFamily__c )),
+    NOT(ISBLANK( PaymentCondition__c ))
+  )
+)</errorConditionFormula>
+    <errorMessage>Meta de performance não deve ter parâmetros de produto, família ou pagamento especificados.</errorMessage>
+</ValidationRule>
