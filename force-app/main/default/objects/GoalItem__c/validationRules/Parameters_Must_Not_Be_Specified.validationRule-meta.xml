@@ -3,7 +3,7 @@
     <fullName>Parameters_Must_Not_Be_Specified</fullName>
     <active>true</active>
     <errorConditionFormula>AND(
-  RecordType.Name = &apos;Performance&apos;,
+  RecordType.DeveloperName = &apos;Performance&apos;,
   OR(
     NOT(ISBLANK( Product__c )),
     NOT(ISBLANK( ProductFamily__c )),

@@ -3,7 +3,7 @@
     <fullName>Product_Family_Must_Be_Specified</fullName>
     <active>true</active>
     <errorConditionFormula>AND( 
-  RecordType.Name = &apos;ProductFamily&apos;, 
+  RecordType.DeveloperName = &apos;ProductFamily&apos;, 
   ISBLANK( ProductFamily__c )
 )</errorConditionFormula>
     <errorDisplayField>ProductFamily__c</errorDisplayField>

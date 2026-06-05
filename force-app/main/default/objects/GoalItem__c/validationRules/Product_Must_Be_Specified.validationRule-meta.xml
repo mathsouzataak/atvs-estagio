@@ -3,7 +3,7 @@
     <fullName>Product_Must_Be_Specified</fullName>
     <active>true</active>
     <errorConditionFormula>AND( 
-  RecordType.Name = &apos;Product&apos;, 
+  RecordType.DeveloperName = &apos;Product&apos;, 
   ISBLANK( Product__c )
 )</errorConditionFormula>
     <errorDisplayField>Product__c</errorDisplayField>

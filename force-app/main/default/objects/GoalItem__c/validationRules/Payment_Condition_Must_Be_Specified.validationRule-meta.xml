@@ -3,7 +3,7 @@
     <fullName>Payment_Condition_Must_Be_Specified</fullName>
     <active>true</active>
     <errorConditionFormula>AND( 
-  RecordType.Name = &apos;PaymentCondition&apos;, 
+  RecordType.DeveloperName = &apos;PaymentCondition&apos;, 
   ISBLANK( PaymentCondition__c )
 )</errorConditionFormula>
     <errorDisplayField>PaymentCondition__c</errorDisplayField>
