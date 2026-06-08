@@ -1,7 +1,9 @@
 public with sharing class GoalRefreshBatch implements Database.Batchable<SObject> {
     
     public Database.QueryLocator start(Database.BatchableContext context) {
-        String query = 'SELECT Id, Seller__c, SalesTotalValue__c, (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName, NegotiatedValue__c, AccomplishedValue__c, ProjectedValue__c FROM GoalItems__r) FROM Goal__c';
+        // String query = 'SELECT Id, Seller__c, SalesTotalValue__c, (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName, NegotiatedValue__c, AccomplishedValue__c, ProjectedValue__c FROM GoalItems__r) FROM Goal__c';
+        String query = 'SELECT Id, Seller__c, (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName FROM GoalItems__r) FROM Goal__c';
+
 
         return Database.getQueryLocator(query);
     }
@@ -30,121 +32,25 @@ public with sharing class GoalRefreshBatch implements Database.Batchable<SObject
 
         for (OrderItem iOrderItem : [SELECT Id, CreatedById, Order.PaymentCondition__c, Order.Status, Product2Id, Product2.ProductFamily__c, TotalPrice
                                         FROM OrderItem
-                                        WHERE Order.CreatedById IN :mapSellerXGoals.keySet() AND Order.Status = 'Draft']) {
+                                        WHERE Order.CreatedById IN :mapSellerXGoals.keySet()]) {
 
-            for (GoalItem__c iGoalItem : mapSellerXGoalItems.get(iOrderItem.CreatedById)) {
-                if (iGoalItem.NegotiatedValue__c == null) {
-                    iGoalItem.NegotiatedValue__c = 0;
+            switch on iOrderItem.Order.Status {
+                when 'Draft' {
+                    GoalRefreshHelper.setOrderItemValueToGoalItems(mapSellerXGoalItems.get(iOrderItem.CreatedById), iOrderItem, 'NegotiatedValue__c');
                 }
-
-                System.debug(iGoalItem.RecordType);
-
-                if (iGoalItem.RecordType.DeveloperName == 'Performance') {
-                    iGoalItem.NegotiatedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'Product'
-                        && iGoalItem.Product__c == iOrderItem.Product2Id) {
-                    iGoalItem.NegotiatedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'ProductFamily'
-                        && iGoalItem.ProductFamily__c == iOrderItem.Product2.ProductFamily__c) {
-                    iGoalItem.NegotiatedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'PaymentCondition'
-                        && iGoalItem.ProductFamily__c == iOrderItem.Order.PaymentCondition__c) {
-                    iGoalItem.NegotiatedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-            }
-        }
-
-
-        for (OrderItem iOrderItem : [SELECT Id, CreatedById, Order.PaymentCondition__c, Order.Status, Product2Id, Product2.ProductFamily__c, TotalPrice
-                                        FROM OrderItem
-                                        WHERE Order.CreatedById IN :mapSellerXGoals.keySet() AND Order.Status = 'Activated']) {
-
-            for (GoalItem__c iGoalItem : mapSellerXGoalItems.get(iOrderItem.CreatedById)) {
-                if (iGoalItem.AccomplishedValue__c == null) {
-                    iGoalItem.AccomplishedValue__c = 0;
-                }
-
-                System.debug(iGoalItem.RecordType);
-
-
-                if (iGoalItem.RecordType.DeveloperName == 'Performance') {
-                    iGoalItem.AccomplishedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'Product'
-                        && iGoalItem.Product__c == iOrderItem.Product2Id) {
-                    iGoalItem.AccomplishedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'ProductFamily'
-                        && iGoalItem.ProductFamily__c == iOrderItem.Product2.ProductFamily__c) {
-                    iGoalItem.AccomplishedValue__c += iOrderItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'PaymentCondition'
-                        && iGoalItem.ProductFamily__c == iOrderItem.Order.PaymentCondition__c) {
-                    iGoalItem.AccomplishedValue__c += iOrderItem.TotalPrice;
-                    continue;
+                when 'Activated' {
+                    GoalRefreshHelper.setOrderItemValueToGoalItems(mapSellerXGoalItems.get(iOrderItem.CreatedById), iOrderItem, 'AccomplishedValue__c');
+                    GoalRefreshHelper.setOrderItemValueToGoals(mapSellerXGoals.get(iOrderItem.CreatedById), iOrderItem);
                 }
             }
 
-            for (Goal__c iGoal : mapSellerXGoals.get(iOrderItem.CreatedById)) {
-                if (iGoal.SalesTotalValue__c == null) {
-                    iGoal.SalesTotalValue__c = 0;
-                }
-
-                iGoal.SalesTotalValue__c += iOrderItem.TotalPrice;
-            }
-            
         }
 
         for (OpportunityLineItem iOppItem : [SELECT Id, CreatedById, Opportunity.PaymentCondition__c, Product2Id, Product2.ProductFamily__c, TotalPrice
-                                        FROM OpportunityLineItem
-                                        WHERE Opportunity.CreatedById IN :mapSellerXGoals.keySet()]) {
-
-            for (GoalItem__c iGoalItem : mapSellerXGoalItems.get(iOppItem.CreatedById)) {
-                if (iGoalItem.ProjectedValue__c == null) {
-                    iGoalItem.ProjectedValue__c = 0;
-                }
-
-                System.debug(iGoalItem.RecordType);
-
-                if (iGoalItem.RecordType.DeveloperName == 'Performance') {
-                    iGoalItem.ProjectedValue__c += iOppItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'Product'
-                        && iGoalItem.Product__c == iOppItem.Product2Id) {
-                    iGoalItem.ProjectedValue__c += iOppItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'ProductFamily'
-                        && iGoalItem.ProductFamily__c == iOppItem.Product2.ProductFamily__c) {
-                    iGoalItem.ProjectedValue__c += iOppItem.TotalPrice;
-                    continue;
-                }
-
-                if (iGoalItem.RecordType.DeveloperName == 'PaymentCondition'
-                        && iGoalItem.ProductFamily__c == iOppItem.Opportunity.PaymentCondition__c) {
-                    iGoalItem.ProjectedValue__c += iOppItem.TotalPrice;
-                    continue;
-                }
-            }
+                                                FROM OpportunityLineItem
+                                                WHERE Opportunity.CreatedById IN :mapSellerXGoals.keySet()]) {
+            System.debug(iOppItem);
+            GoalRefreshHelper.setOppItemValueToGoalItems(mapSellerXGoalItems.get(iOppItem.CreatedById), iOppItem);
         }
 
         Database.update(allGoalItems);
