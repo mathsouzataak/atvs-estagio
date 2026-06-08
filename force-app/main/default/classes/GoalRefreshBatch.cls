@@ -1,11 +1,12 @@
 public with sharing class GoalRefreshBatch implements Database.Batchable<SObject> {
     
     public Database.QueryLocator start(Database.BatchableContext context) {
-        // String query = 'SELECT Id, Seller__c, SalesTotalValue__c, (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName, NegotiatedValue__c, AccomplishedValue__c, ProjectedValue__c FROM GoalItems__r) FROM Goal__c';
-        String query = 'SELECT Id, Seller__c, (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName FROM GoalItems__r) FROM Goal__c';
-
-
-        return Database.getQueryLocator(query);
+        return Database.getQueryLocator([
+            SELECT Id, Seller__c, 
+                (SELECT Id, Product__c, ProductFamily__c, PaymentCondition__c, RecordType.DeveloperName 
+                    FROM GoalItems__r) 
+            FROM Goal__c
+        ]);
     }
 
     public void execute(Database.BatchableContext context, List<Goal__c> goals) {
