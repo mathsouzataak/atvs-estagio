@@ -1,0 +1,18 @@
+<template>
+    <div>
+        <div>
+            <h1>Perguntas Frequentes</h1>
+        </div>
+        <div>
+            <lightning-input type="text" class="slds-size_small" placeholder="Pesquisar"></lightning-input>
+        </div>
+        <template for:each={faqs} for:item="faq">
+            <div key={faq.Id}>
+                <p>{faq.question}</p>
+                <p>
+                    <lightning-formatted-rich-text value={faq.answer}></lightning-formatted-rich-text>
+                </p>
+            </div>
+        </template>
+    </div>
+</template>
