@@ -1,4 +1,4 @@
-.faq-body {
+.body {
     margin-left: 20%;
     margin-right: 20%;
     background-color: white;
@@ -6,19 +6,34 @@
     padding: 20px;
 }
 
-.search-section {
-    flex-direction: row;
-    justify-content: right;
+.title-container {
+    border-bottom: 2px solid #0188b9;
+    padding-bottom: 5px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
 .search-box {
-    right: 0%;
-    width: 35%;
+    width: 40%;
 }
 
 .faq-item {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.question {
+    margin-bottom: 5px;
+}
+
+.answer {
+    font-size: medium;
 }

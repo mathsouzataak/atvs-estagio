@@ -1,16 +1,16 @@
 <template>
-    <div class="faq-body">
-        <div>
+    <div class="body">
+        <div class="title-container">
             <h1 class="slds-text-heading_large slds-align_absolute-center">Perguntas Frequentes</h1>
         </div>
-        <div class="search-section">
-            <lightning-input type="text" class="search-box" placeholder="Pesquisar"></lightning-input>
+        <div class="search-container">
+            <lightning-input name="searchString" type="text" class="search-box" onchange={handleSearch} placeholder="Pesquisar"></lightning-input>
         </div>
-        <template for:each={faqs} for:item="faq">
-            <div key={faq.id} class="faq-item">
-                <h5>{faq.question}</h5>
-                <p>
-                    <lightning-formatted-rich-text value={faq.answer}></lightning-formatted-rich-text>
+        <template for:each={results} for:item="faq">
+            <div key={faq.Id} class="faq-item">
+                <h2 class="slds-text-heading_medium question">{faq.Question__c.value}</h2>
+                <p class="answer">
+                    <lightning-formatted-rich-text value={faq.Answer__c.value}></lightning-formatted-rich-text>
                 </p>
             </div>
         </template>
