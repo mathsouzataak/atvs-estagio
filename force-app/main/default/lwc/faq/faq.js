@@ -56,17 +56,18 @@ export default class Faq extends LightningElement {
     })
     getRecords({data, errors}) {
         if (data) {
-            this.results = data.uiapi.query.FAQ__c.edges.map((edge) => edge.node);
-            this.afterBuffer = data.uiapi.FAQ__c.pageInfo.endCursor;
-            this.hasNextPage = data.uiapi.FAQ__c.pageInfo.hasNextPage;
-            this.hasPreviousPage = data.uiapi.FAQ__c.pageInfo.hasPreviousPage;
-            this.totalCount = data.uiapi.FAQ__c.totalCount;
-            console.log('Results:');
-            console.log(this.results);
+            const faqData = data.uiapi.query.FAQ__c;
+            this.results = faqData.edges.map((edge) => edge.node);
+            this.afterBuffer = faqData.pageInfo.endCursor;
+            this.hasNextPage = faqData.pageInfo.hasNextPage;
+            this.hasPreviousPage = faqData.pageInfo.hasPreviousPage;
+            this.totalCount = faqData.totalCount;
+            console.log('Results:', this.results);
         }
-        this.errors = errors
-        console.log('Errors:');
-        console.log(this.errors[0].message);
+        this.errors = errors;
+        if (errors) {
+            console.log('Errors:', errors[0].message);
+        }
     }
 
     get variables() {
@@ -88,7 +89,7 @@ export default class Faq extends LightningElement {
         return !this.hasNextPage;
     }
 
-    get totalPageCount() {
+    get totalPages() {
         return Math.ceil(this.totalCount / 10);
     }
 
@@ -100,14 +101,14 @@ export default class Faq extends LightningElement {
             console.log(this.searchString);
             console.log(this.variables);
             this.after = null;
-            this.cursorStack = [];
+            this.cursorStack = []
             this.pageNumber = 1;
         }, 1000);
     }
 
     handleNext() {
         if (this.hasNextPage) {
-            this.cursorStack.concat(this.after);
+            this.cursorStack.push(this.after);
             this.after = this.afterBuffer;
             this.pageNumber++;
         }
