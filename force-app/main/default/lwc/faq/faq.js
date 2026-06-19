@@ -1,9 +1,9 @@
-import { LightningElement, wire,  } from 'lwc';
+import { LightningElement, wire, } from 'lwc';
 import { gql, graphql } from "lightning/graphql";
 
 export default class Faq extends LightningElement {
     results;
-    errors; 
+    errors;
 
     after = null;
     pageNumber = 1;
@@ -13,7 +13,7 @@ export default class Faq extends LightningElement {
     hasNextPage;
     hasPreviousPage;
     totalCount = 0;
-    
+
 
     searchString = '%';
 
@@ -54,7 +54,7 @@ export default class Faq extends LightningElement {
         `,
         variables: '$variables'
     })
-    getRecords({data, errors}) {
+    getRecords({ data, errors }) {
         if (data) {
             const faqData = data.uiapi.query.FAQ__c;
             this.results = faqData.edges.map((edge) => edge.node);
