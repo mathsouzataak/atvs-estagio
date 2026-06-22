@@ -37,3 +37,23 @@
 .answer {
     font-size: medium;
 }
+
+@media only screen and (max-width: 992px) {
+    .body {
+        margin-left: 0%;
+        margin-right: 0%;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .title-container {
+        margin-left: 0%;
+        margin-right: 0%;
+    }
+
+    .slds-text-heading_large {
+        font-size: 23px;
+    }
+}
