@@ -1,0 +1,12 @@
+.form {
+    background-color: #FFF;
+    padding: 2rem 5rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.form-field {
+    padding: 1rem;
+}

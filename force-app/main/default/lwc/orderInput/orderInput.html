@@ -1,0 +1,40 @@
+<template>
+    <div class="form slds-p-horizontal_large">
+        <div class="slds-grid slds-gutter">
+            <div class="slds-col slds-size_1-of-2 form-field">
+                <lightning-record-picker label="Cliente" placeholder="Buscar contas" object-api-name="Account" required onchange={handleAccountChange}>
+                </lightning-record-picker>
+            </div>
+            <div class="slds-col slds-size_1-of-2 form-field">
+                <lightning-record-picker label="Condição de pagamento" placeholder="Buscar condição de pagamento"
+                    object-api-name="CondicaoPagamento__c" required>
+                </lightning-record-picker>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-gutter">
+            <div class="slds-col slds-size_1-of-2 form-field">
+                <lightning-record-picker label="Endereço de entrega" placeholder="Buscar endereço"
+                    object-api-name="AccountAddress__c" required filter={addressFilter}>
+                </lightning-record-picker>
+            </div>
+            <div class="slds-col slds-size_1-of-2 form-field">
+                <lightning-input 
+                  type="text"
+                  label="Catálogo de preço"
+                  value="Standard"
+                  disabled
+                ></lightning-input>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <lightning-textarea 
+               
+              max-length="1000"
+              name="observation" 
+              label="Observações" 
+            ></lightning-textarea>
+        </div>
+    </div>
+</template>
