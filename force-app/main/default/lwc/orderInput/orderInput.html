@@ -6,16 +6,21 @@
                 </lightning-record-picker>
             </div>
             <div class="slds-col slds-size_1-of-2 form-field">
-                <lightning-record-picker label="Condição de pagamento" placeholder="Buscar condição de pagamento"
-                    object-api-name="CondicaoPagamento__c" required>
-                </lightning-record-picker>
+                <lightning-combobox
+                  name="paymentCondition"
+                  label="Condição de pagamento"
+                  placeholder="Selecione uma condição de pagamento"
+                  options={paymentConditionOptions}
+                  onchange={handlePaymentSelected}
+                  required
+                ></lightning-combobox>
             </div>
         </div>
 
         <div class="slds-grid slds-gutter">
             <div class="slds-col slds-size_1-of-2 form-field">
                 <lightning-record-picker label="Endereço de entrega" placeholder="Buscar endereço"
-                    object-api-name="AccountAddress__c" required filter={addressFilter}>
+                    object-api-name="AccountAddress__c" required filter={addressFilter} onchange={handleAddressChange}>
                 </lightning-record-picker>
             </div>
             <div class="slds-col slds-size_1-of-2 form-field">
