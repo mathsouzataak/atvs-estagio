@@ -2,18 +2,14 @@
     <div class="form slds-p-horizontal_large">
         <div class="slds-grid slds-gutter">
             <div class="slds-col slds-size_1-of-2 form-field">
-                <lightning-record-picker label="Cliente" placeholder="Buscar contas" object-api-name="Account" required onchange={handleAccountChange}>
+                <lightning-record-picker label="Cliente" placeholder="Buscar contas" object-api-name="Account" required
+                    onchange={handleAccountChange}>
                 </lightning-record-picker>
             </div>
             <div class="slds-col slds-size_1-of-2 form-field">
-                <lightning-combobox
-                  name="paymentCondition"
-                  label="Condição de pagamento"
-                  placeholder="Selecione uma condição de pagamento"
-                  options={paymentConditionOptions}
-                  onchange={handlePaymentSelected}
-                  required
-                ></lightning-combobox>
+                <lightning-combobox name="paymentCondition" label="Condição de pagamento"
+                    placeholder="Selecione uma condição de pagamento" options={paymentConditionOptions}
+                    onchange={handlePaymentSelected} required></lightning-combobox>
             </div>
         </div>
 
@@ -24,22 +20,12 @@
                 </lightning-record-picker>
             </div>
             <div class="slds-col slds-size_1-of-2 form-field">
-                <lightning-input 
-                  type="text"
-                  label="Catálogo de preço"
-                  value="Standard"
-                  disabled
-                ></lightning-input>
+                <lightning-input type="text" label="Catálogo de preço" value="Standard" disabled></lightning-input>
             </div>
         </div>
 
         <div class="form-field">
-            <lightning-textarea 
-               
-              max-length="1000"
-              name="observation" 
-              label="Observações" 
-            ></lightning-textarea>
+            <lightning-textarea max-length="1000" name="observation" label="Observações"></lightning-textarea>
         </div>
     </div>
 </template>
